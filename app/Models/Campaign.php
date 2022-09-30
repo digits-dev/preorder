@@ -14,6 +14,7 @@ class Campaign extends Model
 
     protected $fillable = [
         'campaigns_name',
+        'max_order_count',
         'status',
     ];
 

@@ -207,17 +207,17 @@ label.error {
                                 <td style="width: 25%; vertical-align: center;" >
                                     <div class="text-center">
                                         <label>
-                                          <input class="is_freebies" type="radio" name="is_freebies" value="1">
+                                          <input class="is_freebies" type="radio" name="is_freebies" value="1" {{ $row->is_freebies == 1 ? "checked" : "" }}>
                                           Yes
                                         </label>
                                         <label>
-                                          <input class="is_freebies" type="radio" name="is_freebies" value="0" checked>
+                                          <input class="is_freebies" type="radio" name="is_freebies" value="0" {{ $row->is_freebies == 0 ? "checked" : "" }}>
                                           No
                                         </label>
                                       </div>
                                 </td>
                                 <td>
-                                    <select name='freebies_categories_id' id="freebies_categories_id" class='form-control' style="display: none;">
+                                    <select name='freebies_categories_id' id="freebies_categories_id" class='form-control' style={{ $row->is_freebies == 0 ? "display: none;" : "display: block;" }} >
                                         <option value=''>Please select freebies set</option>
                                         @foreach ($freebies_set as $set)
                                             <option {{ $row->freebies_categories_id == $set->id ? "selected" : "" }} value={{ $set->id }}>{{ $set->category_name }}</option>

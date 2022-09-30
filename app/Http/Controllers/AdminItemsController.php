@@ -381,8 +381,9 @@ use App\Imports\ItemImport;
 	        //Your code here
 			$postdata['created_by']=CRUDBooster::myId();
 			$postdata['dtc_reserved_qty']=$postdata['dtc_wh'];
-			$postdata['included_freebies'] = implode(",", $postdata['included_freebies']);
-			
+			if(is_array($postdata['included_freebies'])){
+				$postdata['included_freebies'] = implode(",", $postdata['included_freebies']);
+			}
 	    }
 
 	    /* 
@@ -409,7 +410,9 @@ use App\Imports\ItemImport;
 	        //Your code here
 			$postdata['updated_by']=CRUDBooster::myId();
 			$postdata['dtc_reserved_qty']=$postdata['dtc_wh'];
-			$postdata['included_freebies'] = implode(",", $postdata['included_freebies']);
+			if(is_array($postdata['included_freebies'])){
+				$postdata['included_freebies'] = implode(",", $postdata['included_freebies']);
+			}
 	    }
 
 	    /* 

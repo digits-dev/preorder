@@ -103,6 +103,8 @@ label.error{
         <input type="hidden" name="over_qty" id="over_qty" value="0" >
         <input type="hidden" name="with_freebies" id="with_freebies" value="0" >
         <input type="hidden" name="max_freebies" id="max_freebies" value="0" >
+        <input type="hidden" name="max_order_qty" id="max_order_qty" value="0" >
+        
         <div class='panel-body' id="order-details">
 
             <div class="col-md-6 col-sm-6">
@@ -112,6 +114,7 @@ label.error{
                             <tr>
                                 <td style="width: 30%">
                                     <b>Customer Email: <span style="color:red">*</span></b>
+                                    <span class="label label-info" id="order_count"></span>
                                 </td>
                                 <td>
                                     <input class="form-control" type="text" placeholder="" name="email_address" id="email_address" value="{{ old('email_address') }}" required>
@@ -164,7 +167,7 @@ label.error{
                         <select id='campaigns_id' name="campaigns_id" class='form-control' required>
                             <option value=''>Please select a campaign</option>
                             @foreach ($campaigns as $campaign)
-                                <option value={{ $campaign->id }}>{{ $campaign->campaigns_name }}</option>
+                                <option data-limit="{{ $campaign->max_order_count }}" value="{{ $campaign->id }}">{{ $campaign->campaigns_name }}</option>
                             @endforeach
                             
                         </select>
@@ -176,7 +179,7 @@ label.error{
                         <label class="control-label">Channel: <span style="color:red">*</span></label>
                         <select id='channels_id' name="channels_id" class='form-control' required>
                             @foreach ($channels as $channel)
-                                <option value={{ $channel->id }}>{{ $channel->channel_name }}</option>
+                                <option value="{{ $channel->id }}">{{ $channel->channel_name }}</option>
                             @endforeach
                             
                         </select>
@@ -187,7 +190,7 @@ label.error{
                         <label class="control-label">Pickup Location: <span style="color:red">*</span></label>
                         <select id='stores_id' name="stores_id" class='form-control' required>
                             @foreach ($stores as $store)
-                                <option value={{ $store->id }}>{{ $store->store_name }}</option>
+                                <option value="{{ $store->id }}">{{ $store->store_name }}</option>
                             @endforeach
                             
                         </select>
@@ -298,6 +301,7 @@ label.error{
 
 var token = $("#token").val();
 var stack = [];
+var orderLimit = false;
 $(document).ready(function() {
     $('.error').hide();
     $(function(){
@@ -376,6 +380,7 @@ $(document).ready(function() {
                 if(data != null){
                     $('#customer_name').val(data.customer_name);
                     $('#contact_number').val(data.contact_number);
+                    $('#order_count').text('0 orders');
                     $('#payment_methods_id option[value="'+data.payment_methods_id+'"]').attr('selected', 'selected').trigger('change'); 
                 }
             }
@@ -385,6 +390,8 @@ $(document).ready(function() {
     $('#campaigns_id').change(function(){
 
         let selected_campaign = $(this).val();
+        let limit = $("#campaigns_id option:selected").attr('data-limit');
+        $('#max_order_qty').val(limit);
         $('#model').removeAttr('disabled');
         $('#model').empty().append('<option selected="selected" value="">Please select a model</option>');
         $.ajax({
@@ -403,6 +410,33 @@ $(document).ready(function() {
                         text : item.model_name 
                     }));
                 });
+            }
+        });
+
+        $.ajax({
+        url: "{{ route('preorder.getCustomerOrders') }}",
+            dataType: "json",
+            type: "POST",
+            data: {
+                _token: token,
+                email_address: $('#email_address').val(),
+                campaign: selected_campaign
+            },
+            success: function(data){
+                if(data != null){
+                    $('#order_count').text(data+' orders');
+                    if(parseInt(limit) >= parseInt(data)){
+                        Swal.fire('Warning!','Order limit reached for this customer!','warning');
+                        orderLimit=true;
+                    }
+                    else if(parseInt(data) >= parseInt(limit)){
+                        Swal.fire('Warning!','Order limit reached for this customer!','warning');
+                        orderLimit=true;
+                    }
+                }
+                else{
+                    $('#order_count').text('0 orders');
+                }
             }
         });
     });
@@ -527,7 +561,7 @@ $(document).ready(function() {
                 var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
                         '<td><input class="form-control text-center" type="text" tabindex="-1" name="digits_code[]" value="' + e.item_code + '" readonly></td>' +
                         '<td><input class="form-control" type="text" tabindex="-1" id="item_description' + e.item_code + '" value="' + e.value + '" readonly></td>' +
-                        '<td><input class="form-control text-center order_qty item_quantity" data-id="' + e.id + '" data-rate="' + e.current_price + '"  data-code="' + e.item_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="qty_' + e.id + '" name="qty[]" value="1" readonly></td>' +
+                        '<td><input class="form-control text-center order_qty item_quantity" data-id="' + e.id + '" data-rate="' + e.current_price + '"  data-code="' + e.item_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="qty_' + e.item_code + '" name="qty[]" value="1" readonly></td>' +
                         '<td><input class="form-control text-center amount" type="text" id="amount_'+e.id+'" value="'+ e.current_price+'" name="amount[]" readonly></td>' +
                         '<td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="reservable_qty[]" data-code="' + e.item_code + '" id="ajax_'+e.item_code+'" value="'+e.reservable_qty+'" readonly></td>'+
                         '<input type="hidden" name="item_id[]" value="' + e.id + '">' +
@@ -578,19 +612,21 @@ $(document).ready(function() {
                         success: function (data_freebies) {
                             $("#order-freebies").show();
                             $.each(data_freebies.freebies, function (i, item) {
-                                var freebies_row = '<tr class="nr-freebies fcategory'+ item.category +'" id="rowid' + item.id + '">' +
-                                    '<td width="5%" style="vertical-align: middle;text-align: center;"><input class="text-center freebies-checkbox check-box-' + e.item_code + '" data-id="' + e.item_code + '" data-code="' + item.digits_code + '" data-category="'+ item.category +'" type="checkbox" tabindex="-1" id="checkbox-' + item.digits_code + '" name="freebies[]"></td>' +
-                                    '<td width="10%"><input class="form-control text-center" type="text" tabindex="-1" name="f_digits_code[]" value="' + item.digits_code + '" readonly></td>' +
-                                    '<td width="35%"><input class="form-control" type="text" tabindex="-1" id="f_item_description' + item.digits_code + '" value="' + item.item_description + '" readonly></td>' +
-                                    '<td width="10%"><input class="form-control text-center order_freebies_qty freebies_quantity' + e.item_code + '" data-id="' + item.id + '" data-rate="' + item.current_srp + '"  data-code="' + item.digits_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="f_qty_' + item.digits_code + '" name="f_qty[]" value="1" readonly></td>' +
-                                    '<td width="20%"><input class="form-control text-center freebies_amount' + e.item_code + '" type="text" data-code="' + item.digits_code + '" id="f_amount_' + item.digits_code + '" name="f_amount[]" value="'+ item.current_srp+'" readonly></td>' +
-                                    '<td width="10%"><input class="form-control text-center freebies-reservable" type="text" tabindex="-1" name="f_reservable_qty[]" data-code="' + item.digits_code + '" id="ajax_'+item.digits_code+'" value="'+item.wh_reserved_qty+'" readonly></td>'+
-                                    '<input type="hidden" name="f_item_id[]" value="' + item.id + '">' +
-                                    '<td width="10%" class="text-center"><button id="'+item.id+'" data-id="' + e.item_code + '" class="btn btn-xs btn-danger delete_freebies"><i class="glyphicon glyphicon-trash"></i></button></td></tr>';
-                                
-                                $(freebies_row).insertAfter($('table#order-freebies tr.dynamicFreebiesRows' + e.id + ':last'));
-                                $('#checkbox-'+ item.digits_code).trigger('click');
-                                $(".fcategory"+item.category).css("background-color", item.background_color);
+                                if(item.wh_reserved_qty != 0){
+                                    var freebies_row = '<tr class="nr-freebies fcategory'+ item.category +'" id="rowid' + item.id + '">' +
+                                        '<td width="5%" style="vertical-align: middle;text-align: center;"><input class="text-center freebies-checkbox check-box-' + e.item_code + '" data-id="' + e.item_code + '" data-code="' + item.digits_code + '" data-category="'+ item.category +'" type="checkbox" tabindex="-1" id="checkbox-' + item.digits_code + '" name="freebies[]"></td>' +
+                                        '<td width="10%"><input class="form-control text-center" type="text" tabindex="-1" name="f_digits_code[]" value="' + item.digits_code + '" readonly></td>' +
+                                        '<td width="35%"><input class="form-control" type="text" tabindex="-1" id="f_item_description' + item.digits_code + '" value="' + item.item_description + '" readonly></td>' +
+                                        '<td width="10%"><input class="form-control text-center order_freebies_qty freebies_quantity' + e.item_code + '" data-id="' + item.id + '" data-rate="' + item.current_srp + '"  data-code="' + item.digits_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="f_qty_' + item.digits_code + '" name="f_qty[]" value="1" readonly></td>' +
+                                        '<td width="20%"><input class="form-control text-center freebies_amount' + e.item_code + '" type="text" data-code="' + item.digits_code + '" id="f_amount_' + item.digits_code + '" name="f_amount[]" value="'+ item.current_srp+'" readonly></td>' +
+                                        '<td width="10%"><input class="form-control text-center freebies-reservable" type="text" tabindex="-1" name="f_reservable_qty[]" data-code="' + item.digits_code + '" id="ajax_'+item.digits_code+'" value="'+item.wh_reserved_qty+'" readonly></td>'+
+                                        '<input type="hidden" name="f_item_id[]" value="' + item.id + '">' +
+                                        '<td width="10%" class="text-center"><button id="'+item.id+'" data-id="' + e.item_code + '" class="btn btn-xs btn-danger delete_freebies"><i class="glyphicon glyphicon-trash"></i></button></td></tr>';
+                                    
+                                    $(freebies_row).insertAfter($('table#order-freebies tr.dynamicFreebiesRows' + e.id + ':last'));
+                                    $('#checkbox-'+ item.digits_code).trigger('click');
+                                    $(".fcategory"+item.category).css("background-color", item.background_color);
+                                }
                             });
 
                             //update available qty
@@ -598,18 +634,20 @@ $(document).ready(function() {
                                 setInterval(function() { 
                                     updateFreebiesReservableQty();
                                 },500);
+
+                                
                             });
                         }
                     });
                 }
             } 
             else {
-                $('#qty_' + e.id).val(function (i, oldval) {
+                $('#qty_' + e.item_code).val(function (i, oldval) {
                     return ++oldval;
                 });
 
-                var q = $('#qty_' + e.id).val();
-                var r = $("#qty_" + e.id).attr("data-rate");
+                var q = $('#qty_' + e.item_code).val();
+                var r = $("#qty_" + e.item_code).attr("data-rate");
 
                 $('#amount_' + e.id).val(function (i, amount) {
                 if (q != 0) {
@@ -625,6 +663,7 @@ $(document).ready(function() {
 
             $(this).val('');
             resetDropDown();
+            
             return false;
         }
     },
@@ -642,11 +681,20 @@ $(document).ready(function() {
         event.preventDefault();
         let rowCount = parseInt($('#order-items tr.nr').length);
         let rowFreebiesCount = parseInt($('#order-freebies tr.nr-freebies').length);
+        let order_limit = $("#campaigns_id option:selected").attr('data-limit');
         
         if(validateEmail($('#email_address').val())==false){
             $('#invalid_email').show();
             return false;
         }
+
+        if(orderLimit){
+            Swal.fire('Warning!','Order limit reached for this customer!','warning');
+        }
+
+        // if($("#over_qty").val() == 1){
+        //     Swal.fire('Warning!','Over quantity detected!','warning'); 
+        // }
 
         if(checkQty()){
             Swal.fire('Warning!','Please check qty!','warning');
@@ -837,8 +885,9 @@ function getTotalComputations() {
 
 function updateReservableQty(){
 $('.item-reservable').each(function () {
-    var item = $(this).attr("data-code");
-    var currentItem = $(this).attr("id");
+     
+    let item = $(this).attr("data-code");
+    let currentItem = $(this).attr("id");
     $.ajax({
     url: "{{ route('preorder.item-reservable') }}",
         dataType: "json",

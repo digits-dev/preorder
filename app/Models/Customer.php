@@ -17,6 +17,8 @@ class Customer extends Model
         'contact_number',
         'email_address',
         'payment_methods_id',
+        'campaigns_id',
+        'order_count',
         'status',
     ];
 

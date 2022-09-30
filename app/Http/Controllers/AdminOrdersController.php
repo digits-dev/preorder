@@ -504,13 +504,17 @@
 				return redirect(CRUDBooster::mainpath('add'))->withErrors(["Please check over qty detected!"])->withInput();
 			}
 
-			$customer = Customer::firstOrCreate([
+			$customer = Customer::updateOrCreate(['email_address' => $request->email_address],[
 				'customer_name' => $request->customer_name,
 				'email_address' => $request->email_address,
 				'contact_number' => $request->contact_number,
 				'payment_methods_id' => $request->payment_methods_id,
+				'campaigns_id' => $request->campaigns_id,
 				'status' => 'ACTIVE'
 			]);
+
+			$customer->increment('order_count');
+			$customer->refresh();
 
 			$order = Order::firstOrCreate([
 				'order_date' => date('Y-m-d H:i:s'),
@@ -625,5 +629,11 @@
 		{
 			$filename = $request->input('filename');
 			return Excel::download(new OrderExport, $filename.'.xlsx');
+		}
+
+		public function getCustomerOrderCount(Request $request)
+		{
+			$customer = Customer::where('email_address',$request->email_address)->first();
+			return json_encode(Order::where('customers_id',$customer->id)->where('campaigns_id',$request->campaign)->select('id')->get()->count());
 		}
 	}

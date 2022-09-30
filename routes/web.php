@@ -55,3 +55,6 @@ Route::post('/admin/orders/item-reservable',[AdminItemsController::class, 'itemR
 
 Route::post('/admin/orders/export',[AdminOrdersController::class,'preOrderExport'])->name('preorder.export');
 Route::post('/admin/customer/get-customer',[AdminCustomersController::class,'getCustomerDetails'])->name('preorder.getCustomer');
+Route::post('/admin/orders/get-customer-order-count',[AdminOrdersController::class,'getCustomerOrderCount'])->name('preorder.getCustomerOrders');
+
+

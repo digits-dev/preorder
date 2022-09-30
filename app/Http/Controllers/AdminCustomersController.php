@@ -34,6 +34,8 @@ use Session;
 			$this->col[] = ["label"=>"Customer Name","name"=>"customer_name"];
 			$this->col[] = ["label"=>"Contact Number","name"=>"contact_number"];
 			$this->col[] = ["label"=>"Email Address","name"=>"email_address"];
+			$this->col[] = ["label"=>"Campaign","name"=>"campaigns_id","join"=>"campaigns,campaigns_name"];
+			$this->col[] = ["label"=>"Order Count","name"=>"order_count"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
