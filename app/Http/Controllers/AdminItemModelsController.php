@@ -31,7 +31,6 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Model Name","name"=>"model_name"];
-			// $this->col[] = ["label"=>"Is Freebies","name"=>"is_freebies"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
@@ -42,8 +41,6 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Model Name','name'=>'model_name','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-6'];
-			// $this->form[] = ['label'=>'Is Freebies','name'=>'is_freebies','type'=>'radio','validation'=>'required|min:0','width'=>'col-sm-6','dataenum'=>'0|No;1|Yes'];
-			
 			if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-6','dataenum'=>'ACTIVE;INACTIVE'];
 			}

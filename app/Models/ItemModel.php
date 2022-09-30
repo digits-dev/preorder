@@ -13,7 +13,6 @@ class ItemModel extends Model
     protected $table = 'item_models';
 
     protected $fillable = [
-        'is_freebies',
         'model_name',
         'status',
     ];
