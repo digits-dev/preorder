@@ -22,6 +22,11 @@ class Campaign extends Model
     {
         return $query->where('campaigns_name',$campaign)->where('status','ACTIVE')->first();
     }
+    
+    public function scopeWithOrderLimit($query, $id)
+    {
+        return $query->where('id',$id)->where('status','ACTIVE')->value('max_order_count');
+    }
 
     public static function boot()
     {

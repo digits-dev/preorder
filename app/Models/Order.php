@@ -28,6 +28,13 @@ class Order extends Model
         'payment_methods_id'
     ];
 
+    public function scopeWithCustomerOrder($query, $customer, $campaign)
+    {
+        return $query->where('customers_id',$customer)
+            ->where('campaigns_id',$campaign)
+            ->select('id')->get()->count();
+    }
+
     public function scopeWithDetails($query, $id)
     {
         return $query->where('orders.id',$id)

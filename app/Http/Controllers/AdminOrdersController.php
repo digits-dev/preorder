@@ -509,12 +509,14 @@
 				'email_address' => $request->email_address,
 				'contact_number' => $request->contact_number,
 				'payment_methods_id' => $request->payment_methods_id,
-				'campaigns_id' => $request->campaigns_id,
 				'status' => 'ACTIVE'
 			]);
 
-			$customer->increment('order_count');
-			$customer->refresh();
+			$orderLimit = Campaign::withOrderLimit($request->campaigns_id);
+			$customerOrderCount = Order::withCustomerOrder($customer->id,$request->campaigns_id) + 1;
+			if($orderLimit < $customerOrderCount){
+				return redirect(CRUDBooster::mainpath('add'))->withErrors(["Order limit reached for this customer!"])->withInput();
+			}
 
 			$order = Order::firstOrCreate([
 				'order_date' => date('Y-m-d H:i:s'),
