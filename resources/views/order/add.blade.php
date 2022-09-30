@@ -425,11 +425,11 @@ $(document).ready(function() {
             success: function(data){
                 if(data != null){
                     $('#order_count').text(data+' orders');
-                    if(parseInt(limit) >= parseInt(data)){
+                    if(parseInt(limit) >= parseInt(data) && data != 0){
                         Swal.fire('Warning!','Order limit reached for this customer!','warning');
                         orderLimit=true;
                     }
-                    else if(parseInt(data) >= parseInt(limit)){
+                    else if(parseInt(data) >= parseInt(limit) && data != 0){
                         Swal.fire('Warning!','Order limit reached for this customer!','warning');
                         orderLimit=true;
                     }
