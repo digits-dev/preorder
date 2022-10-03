@@ -511,7 +511,12 @@ use App\Imports\ItemImport;
 			}
             HeadingRowFormatter::default('slug');
             $array = Excel::toArray(new ItemInventoryImport, $path);
+			$uploaded_items = array_column($array[0], "digits_code");
             $items = array_unique(array_column($array[0], "digits_code"));
+
+			if(count((array)$uploaded_items) != count((array)$items)){
+				array_push($errors, 'duplicate item found!');
+			}
 
             //data checking
             foreach ($items as $item) {
@@ -604,6 +609,12 @@ use App\Imports\ItemImport;
 			$campaigns = array_unique(array_column($array[0], "campaign"));
 			$freebie_categories = array_unique(array_column($array[0], "freebie_category"));
 			$included_freebies = array_unique(array_column($array[0], "included_freebie"));
+			$uploaded_items = array_column($array[0], "digits_code");
+            $items = array_unique(array_column($array[0], "digits_code"));
+
+			if(count((array)$uploaded_items) != count((array)$items)){
+				array_push($errors, 'duplicate item found!');
+			}
 
             //data checking
             foreach ($brands as $brand) {
