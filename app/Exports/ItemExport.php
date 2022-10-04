@@ -20,6 +20,7 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             'UPC Code',
             'Item Description',
             'Brand',
+            'Category',
             'Model',
             'Size',
             'Actual Color',
@@ -38,6 +39,7 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             $item->digits_code,
             $item->upc_code,
             $item->item_description,
+            $item->category_name,
             $item->brand_name,
             $item->model_name,
             $item->size,
@@ -46,7 +48,7 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             $item->campaigns_name,
             rtrim(FreebiesCategory::withCategory($item->included_freebies),","),
             ($item->is_freebies == 0) ? 'No' : 'Yes',
-            $item->category_name,
+            $item->freebie_category_name,
             $item->dtc_reserved_qty,
         ];
     }
@@ -55,6 +57,7 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
     {
         $items = Item::query()
             ->leftJoin('brands','items.brands_id','=','brands.id')
+            ->leftJoin('item_categories','items.item_categories_id','=','item_categories.id')
             ->leftJoin('colors','items.colors_id','=','colors.id')
             ->leftJoin('sizes','items.sizes_id','=','sizes.id')
             ->leftJoin('campaigns','items.campaigns_id','=','campaigns.id')
@@ -63,10 +66,11 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             ->select(
                 'items.*',
                 'brands.brand_name',
+                'item_categories.category_name',
                 'colors.color_name',
                 'item_models.model_name',
                 'sizes.size',
-                'freebies_categories.category_name',
+                'freebies_categories.category_name as freebie_category_name',
                 'campaigns.campaigns_name');
 
         if (request()->has('filter_column')) {

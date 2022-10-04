@@ -109,6 +109,21 @@ label.error {
                                     </select>
                                 </td>
                             </tr>
+
+                            <tr>
+                                <td style="width: 25%">
+                                    <b>Category</b>
+                                </td>
+                                <td>
+                                    <select name='item_categories_id' id="item_categories_id" class='form-control' required>
+                                        <option value=''>Please select category</option>
+                                        @foreach ($categories as $category)
+                                            <option {{ $row->item_categories_id == $category->id ? "selected" : "" }} value={{ $category->id }}>{{ $category->category_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                            </tr>
+
                             <tr>
                                 <td style="width: 25%">
                                     <b>Item Description</b>

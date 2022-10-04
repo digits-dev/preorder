@@ -6,31 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use CRUDBooster;
 
-class Item extends Model
+class ItemCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'items';
+    protected $table = 'item_categories';
 
     protected $fillable = [
-        'digits_code',
-        'upc_code',
-        'item_description',
-        'brands_id',
-        'item_categories_id',
-        'item_models_id',
-        'sizes_id',
-        'colors_id',
-        'actual_color',
-        'current_srp',
-        'dtc_wh',
-        'dtc_reserved_qty',
-        'tier',
-        'included_freebies',
-        'is_freebies',
-        'freebies_categories_id',
-        'campaigns_id'
+        'category_name',
+        'status',
     ];
+
+    public function scopeWithName($query, $category)
+    {
+        return $query->where('category_name',$category)->where('status','ACTIVE')->first();
+    }
 
     public static function boot()
     {

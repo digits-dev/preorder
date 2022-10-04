@@ -9,12 +9,13 @@
 	use Maatwebsite\Excel\HeadingRowImport;
     use Maatwebsite\Excel\Imports\HeadingRowFormatter;
     use App\Exports\ExcelTemplateExport;
-use App\Exports\ItemExport;
-use App\Imports\ItemImport;
+	use App\Exports\ItemExport;
+	use App\Imports\ItemImport;
 	use App\Models\Brand;
 	use App\Models\Campaign;
 	use App\Models\Color;
 	use App\Models\FreebiesCategory;
+	use App\Models\ItemCategory;
 	use App\Models\ItemModel;
 	use App\Models\Size;
 	use Maatwebsite\Excel\Facades\Excel;
@@ -48,15 +49,15 @@ use App\Imports\ItemImport;
 			$this->col[] = ["label"=>"UPC Code","name"=>"upc_code"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
 			$this->col[] = ["label"=>"Brand","name"=>"brands_id","join"=>"brands,brand_name"];
+			$this->col[] = ["label"=>"Category","name"=>"item_categories_id","join"=>"item_categories,category_name"];
 			$this->col[] = ["label"=>"Model","name"=>"item_models_id","join"=>"item_models,model_name"];
 			$this->col[] = ["label"=>"Size","name"=>"sizes_id","join"=>"sizes,size"];
 			$this->col[] = ["label"=>"Actual Color","name"=>"colors_id","join"=>"colors,color_name"];
 			$this->col[] = ["label"=>"Current SRP","name"=>"current_srp"];
 			$this->col[] = ["label"=>"Campaign","name"=>"campaigns_id","join"=>"campaigns,campaigns_name"];
-			// $this->col[] = ["label"=>"Tier","name"=>"tier"];
-			$this->col[] = ["label"=>"Included Freebie","name"=>"included_freebies"];
+			$this->col[] = ["label"=>"Included Freebie (Units Only)","name"=>"included_freebies"];
 			$this->col[] = ["label"=>"Is Freebie","name"=>"is_freebies"];
-			$this->col[] = ['label'=>"Freebie Category","name"=>"freebies_categories_id","join"=>"freebies_categories,category_name"];
+			$this->col[] = ['label'=>"Freebie Category (Freebies Only)","name"=>"freebies_categories_id","join"=>"freebies_categories,category_name"];
 			$this->col[] = ["label"=>"Available Qty","name"=>"dtc_reserved_qty"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -66,16 +67,15 @@ use App\Imports\ItemImport;
 			$this->form[] = ['label'=>'UPC Code','name'=>'upc_code','type'=>'text','validation'=>'required|min:1|max:50','width'=>'col-sm-6'];
 			$this->form[] = ['label'=>'Item Description','name'=>'item_description','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-6'];
 			$this->form[] = ['label'=>'Brand','name'=>'brands_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'brands,brand_name','datatable_where'=>"status='ACTIVE'"];
+			$this->form[] = ['label'=>'Category','name'=>'item_categories_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'item_categories_id,category_name','datatable_where'=>"status='ACTIVE'"];
 			$this->form[] = ['label'=>'Model','name'=>'item_models_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'item_models,model_name','datatable_where'=>"status='ACTIVE'"];
 			$this->form[] = ['label'=>'Size','name'=>'sizes_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'sizes,size','datatable_where'=>"status='ACTIVE'"];
 			$this->form[] = ['label'=>'Actual Color','name'=>'colors_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'colors,color_name','datatable_where'=>"status='ACTIVE'"];
-			// $this->form[] = ['label'=>'Actual Color','name'=>'actual_color','type'=>'text','validation'=>'required|min:1|max:100','width'=>'col-sm-6'];
 			$this->form[] = ['label'=>'Current SRP','name'=>'current_srp','type'=>'number','validation'=>'required|min:0','width'=>'col-sm-6'];
 			$this->form[] = ['label'=>'Campaigns','name'=>'campaigns_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6','datatable'=>'campaigns,campaigns_name','datatable_where'=>"status='ACTIVE'"];
 			$this->form[] = ['label'=>'Is Freebie','name'=>'is_freebies','type'=>'radio','validation'=>'required|min:0','width'=>'col-sm-6','dataenum'=>'0|No;1|Yes'];
-			// $this->form[] = ['label'=>'Tier','name'=>'tier','type'=>'select','validation'=>'required|min:0','width'=>'col-sm-6','dataenum'=>'1;2;3'];
-			$this->form[] = ['label'=>'Included Freebie','name'=>'included_freebies','type'=>'select2-multi','multiple'=>true,'width'=>'col-sm-6','datatable'=>'freebies_categories,category_name','datatable_where'=>"status='ACTIVE'"];
-			$this->form[] = ['label'=>'Freebie Category','name'=>'freebies_categories_id','type'=>'select','validation'=>'required|min:0','width'=>'col-sm-6','datatable'=>'freebies_categories,category_name','datatable_where'=>"status='ACTIVE'"];
+			$this->form[] = ['label'=>'Included Freebie (Units Only)','name'=>'included_freebies','type'=>'select2-multi','multiple'=>true,'width'=>'col-sm-6','datatable'=>'freebies_categories,category_name','datatable_where'=>"status='ACTIVE'"];
+			$this->form[] = ['label'=>'Freebie Category (Freebies Only)','name'=>'freebies_categories_id','type'=>'select','validation'=>'required|min:0','width'=>'col-sm-6','datatable'=>'freebies_categories,category_name','datatable_where'=>"status='ACTIVE'"];
 			$this->form[] = ['label'=>'WH Qty','name'=>'dtc_wh','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-6'];
 			// $this->form[] = ['label'=>'Reserved Qty','name'=>'dtc_reserved_qty','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-6'];
 			# END FORM DO NOT REMOVE THIS LINE
@@ -351,7 +351,7 @@ use App\Imports\ItemImport;
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 	    	//Your code here
-			if($column_index == 10){
+			if($column_index == 11){
 				$freebie_sets = explode(",",$column_value);
 				$sets = FreebiesCategory::whereIn('id',$freebie_sets)->get();
 				$column_value='';
@@ -360,12 +360,12 @@ use App\Imports\ItemImport;
 				}
 
 			}
-			if($column_index == 11){
+			if($column_index == 12){
 				if($column_value == 1){
 					$column_value='<span class="label label-success">YES</span>';
 				}
 				else{
-						$column_value='<span class="label label-danger">NO</span>';
+					$column_value='<span class="label label-danger">NO</span>';
 				}
 			}
 	    }
@@ -460,6 +460,7 @@ use App\Imports\ItemImport;
             $data = [];
             $data['page_title'] = 'Item Create';
 			$data['brands'] = Brand::where('status','ACTIVE')->get();
+			$data['categories'] = ItemCategory::where('status','ACTIVE')->get();
 			$data['campaigns'] = Campaign::where('status','ACTIVE')->get();
 			$data['colors'] = Color::where('status','ACTIVE')->get();
 			$data['sizes'] = Size::where('status','ACTIVE')->get();
@@ -480,6 +481,7 @@ use App\Imports\ItemImport;
 			$data['row'] = Item::where('id',$id)->first();
             $data['page_title'] = 'Item Update';
 			$data['brands'] = Brand::where('status','ACTIVE')->get();
+			$data['categories'] = ItemCategory::where('status','ACTIVE')->get();
 			$data['campaigns'] = Campaign::where('status','ACTIVE')->get();
 			$data['colors'] = Color::where('status','ACTIVE')->get();
 			$data['sizes'] = Size::where('status','ACTIVE')->get();
@@ -510,9 +512,9 @@ use App\Imports\ItemImport;
                 return redirect()->back()->with(['message_type' => 'danger', 'message' => 'Failed ! Please check template headers, mismatched detected.']);
 			}
             HeadingRowFormatter::default('slug');
-            $array = Excel::toArray(new ItemInventoryImport, $path);
-			$uploaded_items = array_column($array[0], "digits_code");
-            $items = array_unique(array_column($array[0], "digits_code"));
+            $excelData = Excel::toArray(new ItemInventoryImport, $path);
+			$uploaded_items = array_column($excelData[0], "digits_code");
+            $items = array_unique(array_column($excelData[0], "digits_code"));
 
 			if(count((array)$uploaded_items) != count((array)$items)){
 				array_push($errors, 'duplicate item found!');
@@ -571,7 +573,7 @@ use App\Imports\ItemImport;
 		public function itemTemplate()
 		{
 			$header = array("DIGITS CODE","UPC CODE","ITEM DESCRIPTION",
-				"BRAND","MODEL","ACTUAL COLOR","SIZE",
+				"BRAND","CATEGORY","MODEL","ACTUAL COLOR","SIZE",
 				"CURRENT SRP","CAMPAIGN","IS FREEBIE","INCLUDED FREEBIE",
 				"FREEBIE CATEGORY","WH QTY");
             $export = new ExcelTemplateExport([$header]);
@@ -587,7 +589,7 @@ use App\Imports\ItemImport;
             $headings = (new HeadingRowImport)->toArray($path);
             //check headings
             $header = array("DIGITS CODE","UPC CODE","ITEM DESCRIPTION",
-			"BRAND","MODEL","ACTUAL COLOR","SIZE",
+			"BRAND","CATEGORY","MODEL","ACTUAL COLOR","SIZE",
 			"CURRENT SRP","CAMPAIGN","IS FREEBIE","INCLUDED FREEBIE",
 			"FREEBIE CATEGORY","WH QTY");
 
@@ -601,16 +603,19 @@ use App\Imports\ItemImport;
                 return redirect(route('item.view'))->with(['message_type' => 'danger', 'message' => 'Failed ! Please check template headers, mismatched detected.']);
 			}
             HeadingRowFormatter::default('slug');
-            $array = Excel::toArray(new ItemInventoryImport, $path);
-            $brands = array_unique(array_column($array[0], "brand"));
-			$colors = array_unique(array_column($array[0], "actual_color"));
-			$sizes = array_unique(array_column($array[0], "size"));
-			$models = array_unique(array_column($array[0], "model"));
-			$campaigns = array_unique(array_column($array[0], "campaign"));
-			$freebie_categories = array_unique(array_column($array[0], "freebie_category"));
-			$included_freebies = array_unique(array_column($array[0], "included_freebie"));
-			$uploaded_items = array_column($array[0], "digits_code");
-            $items = array_unique(array_column($array[0], "digits_code"));
+            $excelData = Excel::toArray(new ItemInventoryImport, $path);
+
+            $brands = array_unique(array_column($excelData[0], "brand"));
+			$categories = array_unique(array_column($excelData[0], "category"));
+			$colors = array_unique(array_column($excelData[0], "actual_color"));
+			$sizes = array_unique(array_column($excelData[0], "size"));
+			$models = array_unique(array_column($excelData[0], "model"));
+			$campaigns = array_unique(array_column($excelData[0], "campaign"));
+			$isFreebies = array_unique(array_column($excelData[0], "is_freebie"));
+			$freebie_categories = array_unique(array_column($excelData[0], "freebie_category"));
+			$included_freebies = array_unique(array_column($excelData[0], "included_freebie"));
+			$uploaded_items = array_column($excelData[0], "digits_code");
+            $items = array_unique(array_column($excelData[0], "digits_code"));
 
 			if(count((array)$uploaded_items) != count((array)$items)){
 				array_push($errors, 'duplicate item found!');
@@ -624,6 +629,14 @@ use App\Imports\ItemImport;
                     array_push($errors, 'brand '.$brand.' not found!');
                 }
             }
+
+			foreach ($categories as $category) {
+				$categoryDetails = ItemCategory::where('category_name',$category)
+					->where('status','ACTIVE')->first();
+                if(empty($categoryDetails)){
+                    array_push($errors, 'category '.$category.' not found!');
+                }
+			}
 
 			foreach ($colors as $color) {
                 $colorDetails = Color::where('color_name',$color)
@@ -683,7 +696,7 @@ use App\Imports\ItemImport;
                 $categoryDetails = FreebiesCategory::where('category_name',$category)
 					->where('status','ACTIVE')->first();
                 if(empty($categoryDetails)){
-                    array_push($errors, 'category '.$category.' not found!');
+                    array_push($errors, 'freebie category '.$category.' not found!');
 					FreebiesCategory::firstOrCreate([
 						'category_name' => $category,
 						'status' => 'ACTIVE'
@@ -695,14 +708,20 @@ use App\Imports\ItemImport;
 				if($included_freebie == ''){
 					continue;
 				}
-				$categories = explode(",",$included_freebie);
-				foreach ($categories as $category) {
-					$categoryDetails = FreebiesCategory::where('category_name',$category)->where('status','ACTIVE')->first();
-					if(empty($categoryDetails)){
-						array_push($errors, 'included freebie '.$category.' not found!');
+				$freebieCategories = explode(",",$included_freebie);
+				foreach ($freebieCategories as $freebieCategory) {
+					$freebieCategoryDetails = FreebiesCategory::where('category_name',$freebieCategory)->where('status','ACTIVE')->first();
+					if(empty($freebieCategoryDetails)){
+						array_push($errors, 'included freebie '.$freebieCategory.' not found!');
 					}
 				}
                 
+			}
+
+			foreach ($isFreebies as $isFreebie) {
+				if(!in_array($isFreebie,["YES","NO"])){
+					array_push($errors, 'is freebie should be YES/NO!');
+				}
 			}
 
             if(!empty($errors)){

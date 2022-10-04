@@ -7,6 +7,7 @@ use App\Models\Campaign;
 use App\Models\Color;
 use App\Models\FreebiesCategory;
 use App\Models\Item;
+use App\Models\ItemCategory;
 use App\Models\ItemModel;
 use App\Models\Size;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -30,6 +31,7 @@ class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
             'upc_code'          => $row["upc_code"],
             'item_description'  => $row["item_description"],
             'brands_id'         => Brand::withName($row["brand"])->id,
+            'item_categories_id' => ItemCategory::withName($row["category"])->id,
             'colors_id'         => Color::withName($row["actual_color"])->id,
             'item_models_id'    => ItemModel::withName($row["model"])->id,
             'sizes_id'          => Size::withName($row["size"])->id,
