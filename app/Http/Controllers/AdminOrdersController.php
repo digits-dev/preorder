@@ -499,7 +499,7 @@
 			}
 
 			if ($request->over_qty == 1) {
-				return redirect(CRUDBooster::mainpath('add'))->with("message","Please check over qty detected!")->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->with(["error","Please check over qty detected!"])->withInput();
 			}
 
 			$customer = Customer::updateOrCreate(['email_address' => $request->email_address],[
@@ -513,7 +513,7 @@
 			$orderLimit = Campaign::withOrderLimit($request->campaigns_id);
 			$customerOrderCount = Order::withCustomerOrder($customer->id,$request->campaigns_id) + 1;
 			if($orderLimit < $customerOrderCount){
-				return redirect(CRUDBooster::mainpath('add'))->withErrors(["message"=>"Order limit reached for this customer!"])->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->with(["error"=>"Order limit reached for this customer!"])->withInput();
 			}
 
 			$order = Order::firstOrCreate([
