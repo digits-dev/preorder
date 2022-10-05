@@ -774,8 +774,6 @@
 			$data = array();
 			$freebiesDetails = Item::whereIn('freebies_categories_id',explode(",",$request->search))
 				->where('is_freebies',1)
-				->skip(0)
-				->take(10)
 				->orderBy('freebies_categories_id','ASC')
 				->get();
 

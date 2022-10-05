@@ -80,8 +80,8 @@ label.error{
         &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>
     @endif
     
-    @if ($errors->any())
-        <div class="alert alert-danger" role="alert">
+    @if (count($errors) > 0)
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -681,7 +681,6 @@ $(document).ready(function() {
         event.preventDefault();
         let rowCount = parseInt($('#order-items tr.nr').length);
         let rowFreebiesCount = parseInt($('#order-freebies tr.nr-freebies').length);
-        let order_limit = $("#campaigns_id option:selected").attr('data-limit');
         
         if(validateEmail($('#email_address').val())==false){
             $('#invalid_email').show();

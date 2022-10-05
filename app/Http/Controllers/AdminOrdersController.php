@@ -117,14 +117,14 @@
 					"color" => "danger",
 					"confirmation" => true,
 					"confirmation_title" => "Order Cancellation!",
-					'showIf' => '[payment_statuses_id] == 1',
+					'showIf' => '[payment_statuses_id] == '.self::ORDER_RESERVED,
 					"url" => CRUDBooster::mainpath('preorder-cancel/[id]')];
 
 				$this->addaction[] = [
 						"title" => "Update Order",
 						"icon" => "fa fa-pencil",
 						"color" => "warning",
-						'showIf' => '[payment_statuses_id] != 2',
+						'showIf' => '[payment_statuses_id] != '.self::ORDER_CANCELLED,
 						"url" => CRUDBooster::mainpath('edit/[id]')];
 			}
 			
@@ -447,7 +447,6 @@
 			}
 			$data['paymentMethods'] = PaymentMethod::where('status','ACTIVE')->get();
 			$data['orderSetup'] = OrderFreebiesSetup::where('status','ACTIVE')->first();
-			$data['models'] = ItemModel::where('is_freebies',0)->where('status','ACTIVE')->get();
             return view('order.add',$data);
 		}
 
@@ -636,6 +635,9 @@
 		public function getCustomerOrderCount(Request $request)
 		{
 			$customer = Customer::where('email_address',$request->email_address)->first();
-			return json_encode(Order::where('customers_id',$customer->id)->where('campaigns_id',$request->campaign)->select('id')->get()->count());
+			return json_encode(Order::where('customers_id',$customer->id)
+				->where('campaigns_id',$request->campaign)
+				->where('payment_statuses_id','!=',self::ORDER_CANCELLED)
+				->select('id')->get()->count());
 		}
 	}
