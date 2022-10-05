@@ -426,17 +426,14 @@ $(document).ready(function() {
             success: function(orderCount){
                 if(orderCount != null){
                     $('#order_count').text(orderCount+' orders');
-                    if(parseInt(limit) >= parseInt(orderCount) && orderCount != 0){
-                        Swal.fire('Warning!','Order limit reached for this customer!','warning');
-                        orderLimit=true;
-                    }
-                    else if(parseInt(orderCount) >= parseInt(limit) && orderCount != 0){
+                    if(parseInt(limit) <= parseInt(orderCount) && orderCount != 0){
                         Swal.fire('Warning!','Order limit reached for this customer!','warning');
                         orderLimit=true;
                     }
                 }
                 else{
                     $('#order_count').text('0 orders');
+                    orderLimit=false;
                 }
             }
         });

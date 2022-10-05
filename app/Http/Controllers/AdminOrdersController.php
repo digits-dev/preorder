@@ -557,7 +557,11 @@
 				}
 			}
 
-			return redirect(CRUDBooster::mainpath())->with(['message_type' => 'success', 'message' => 'Order reserved!']);
+			// CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success');
+			return redirect(CRUDBooster::mainpath())->with([
+				'message_type' => 'success', 
+				'message' => 'Order reserved!',
+			]);
 			
 		}
 
@@ -634,9 +638,6 @@
 		public function getCustomerOrderCount(Request $request)
 		{
 			$customer = Customer::where('email_address',$request->email_address)->first();
-			return json_encode(Order::where('customers_id',$customer->id)
-				->where('campaigns_id',$request->campaign)
-				->where('payment_statuses_id','!=',self::ORDER_CANCELLED)
-				->select('id')->get()->count());
+			return json_encode(Order::where('customers_id',$customer->id)->where('campaigns_id',$request->campaign)->select('id')->get()->count());
 		}
 	}
