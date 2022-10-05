@@ -110,7 +110,7 @@ label.error {
                                 </td>
                             </tr>
 
-                            <tr>
+                            {{-- <tr>
                                 <td style="width: 25%">
                                     <b>Category</b>
                                 </td>
@@ -122,7 +122,7 @@ label.error {
                                         @endforeach
                                     </select>
                                 </td>
-                            </tr>
+                            </tr> --}}
 
                             <tr>
                                 <td style="width: 25%">
@@ -217,17 +217,18 @@ label.error {
 
                             <tr>
                                 <td style="width: 25%">
-                                    <b>Is Freebies</b>
+                                    <b>Item Type</b>
                                 </td>
                                 <td style="width: 25%; vertical-align: center;" >
                                     <div class="text-center">
                                         <label>
                                           <input class="is_freebies" type="radio" name="is_freebies" value="1" {{ $row->is_freebies == 1 ? "checked" : "" }}>
-                                          Yes
+                                          FREEBIE
                                         </label>
+                                        <br>
                                         <label>
                                           <input class="is_freebies" type="radio" name="is_freebies" value="0" {{ $row->is_freebies == 0 ? "checked" : "" }}>
-                                          No
+                                          MAIN ITEM
                                         </label>
                                       </div>
                                 </td>

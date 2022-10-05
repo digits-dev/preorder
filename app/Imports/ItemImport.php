@@ -31,7 +31,7 @@ class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
             'upc_code'          => $row["upc_code"],
             'item_description'  => $row["item_description"],
             'brands_id'         => Brand::withName($row["brand"])->id,
-            'item_categories_id' => ItemCategory::withName($row["category"])->id,
+            // 'item_categories_id' => ItemCategory::withName($row["category"])->id,
             'colors_id'         => Color::withName($row["actual_color"])->id,
             'item_models_id'    => ItemModel::withName($row["model"])->id,
             'sizes_id'          => Size::withName($row["size"])->id,
@@ -39,7 +39,7 @@ class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
             'dtc_wh'            => $row["wh_qty"],
             'dtc_reserved_qty'  => $row["wh_qty"],
             'included_freebies' => (empty($row["included_freebie"])) ? null : rtrim(FreebiesCategory::withFreebie($row["included_freebie"]),","),
-            'is_freebies'       => (($row["is_freebie"]) == "NO") ? 0 : 1,
+            'is_freebies'       => (($row["is_freebie"]) == "MAIN ITEM") ? 0 : 1,
             'freebies_categories_id' => (empty($row["freebie_category"])) ? null : FreebiesCategory::withName($row["freebie_category"])->id,
             'campaigns_id'      => (empty($row["campaign"])) ? null : Campaign::withName($row["campaign"])->id
         ]);

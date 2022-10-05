@@ -499,7 +499,7 @@
 			}
 
 			if ($request->over_qty == 1) {
-				return redirect(CRUDBooster::mainpath('add'))->withErrors(["Please check over qty detected!"])->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->withErrors(["message"=>"Please check over qty detected!"])->withInput();
 			}
 
 			$customer = Customer::updateOrCreate(['email_address' => $request->email_address],[
@@ -513,7 +513,7 @@
 			$orderLimit = Campaign::withOrderLimit($request->campaigns_id);
 			$customerOrderCount = Order::withCustomerOrder($customer->id,$request->campaigns_id) + 1;
 			if($orderLimit < $customerOrderCount){
-				return redirect(CRUDBooster::mainpath('add'))->withErrors(["Order limit reached for this customer!"])->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->withErrors(["message"=>"Order limit reached for this customer!"])->withInput();
 			}
 
 			$order = Order::firstOrCreate([
@@ -557,7 +557,6 @@
 				}
 			}
 
-			// CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success');
 			return redirect(CRUDBooster::mainpath())->with([
 				'message_type' => 'success', 
 				'message' => 'Order reserved!',
@@ -638,6 +637,10 @@
 		public function getCustomerOrderCount(Request $request)
 		{
 			$customer = Customer::where('email_address',$request->email_address)->first();
-			return json_encode(Order::where('customers_id',$customer->id)->where('campaigns_id',$request->campaign)->select('id')->get()->count());
+			
+			return json_encode(Order::where('customers_id',$customer->id)
+				->where('campaigns_id',$request->campaign)
+				->where('payment_statuses_id','!=',self::ORDER_CANCELLED)
+				->select('id')->get()->count());
 		}
 	}

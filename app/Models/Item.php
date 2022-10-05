@@ -17,7 +17,7 @@ class Item extends Model
         'upc_code',
         'item_description',
         'brands_id',
-        'item_categories_id',
+        // 'item_categories_id',
         'item_models_id',
         'sizes_id',
         'colors_id',

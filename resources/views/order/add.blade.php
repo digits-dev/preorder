@@ -149,7 +149,6 @@ label.error{
                                         @foreach ($paymentMethods as $payment)
                                             <option {{ old('payment_methods_id') == $payment->id ? "selected" : "" }} value={{ $payment->id }}>{{ $payment->payment_method }}</option>
                                         @endforeach
-                                        
                                     </select>
                                 </td>
                             </tr>
