@@ -394,8 +394,9 @@ $(document).ready(function() {
         $('#max_order_qty').val(limit);
         $('#model').removeAttr('disabled');
         $('#model').empty().append('<option selected="selected" value="">Please select a model</option>');
+        
         $.ajax({
-        url: "{{ route('item.getItemModels') }}",
+            url: "{{ route('item.getItemModels') }}",
             dataType: "json",
             type: "POST",
             data: {
@@ -414,7 +415,7 @@ $(document).ready(function() {
         });
 
         $.ajax({
-        url: "{{ route('preorder.getCustomerOrders') }}",
+            url: "{{ route('preorder.getCustomerOrders') }}",
             dataType: "json",
             type: "POST",
             data: {
@@ -422,14 +423,14 @@ $(document).ready(function() {
                 email_address: $('#email_address').val(),
                 campaign: selected_campaign
             },
-            success: function(data){
-                if(data != null){
-                    $('#order_count').text(data+' orders');
-                    if(parseInt(limit) >= parseInt(data) && data != 0){
+            success: function(orderCount){
+                if(orderCount != null){
+                    $('#order_count').text(orderCount+' orders');
+                    if(parseInt(limit) >= parseInt(orderCount) && orderCount != 0){
                         Swal.fire('Warning!','Order limit reached for this customer!','warning');
                         orderLimit=true;
                     }
-                    else if(parseInt(data) >= parseInt(limit) && data != 0){
+                    else if(parseInt(orderCount) >= parseInt(limit) && orderCount != 0){
                         Swal.fire('Warning!','Order limit reached for this customer!','warning');
                         orderLimit=true;
                     }
@@ -446,7 +447,7 @@ $(document).ready(function() {
         $('#color').removeAttr('disabled');
         $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
         $.ajax({
-        url: "{{ route('item.getItemColors') }}",
+            url: "{{ route('item.getItemColors') }}",
             dataType: "json",
             type: "POST",
             data: {
@@ -472,7 +473,7 @@ $(document).ready(function() {
         $('#size').removeAttr('disabled');
 
         $.ajax({
-        url: "{{ route('item.getItemSizes') }}",
+            url: "{{ route('item.getItemSizes') }}",
             dataType: "json",
             type: "POST",
             data: {
