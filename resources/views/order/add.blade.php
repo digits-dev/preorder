@@ -80,8 +80,8 @@ label.error{
         &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>
     @endif
     
-    @if (count($errors) > 0)
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible show" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>

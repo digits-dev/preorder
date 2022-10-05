@@ -478,7 +478,6 @@
 		
 		public function preOrderSave(Request $request)
 		{
-			// dd($request->all());
 			if (!CRUDBooster::myId()) {
 				return view('crudbooster::login');
 			}
@@ -487,7 +486,7 @@
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
-			$validator = \Validator::make($request->all(), [
+			$validator = Validator::make($request->all(), [
                 'customer_name' => 'required|alpha_spaces',
 				'email_address' => 'required|email',
 				'contact_number' => 'required|numeric|digits:11',
@@ -606,7 +605,7 @@
             ]);
 
 			if ($validator->fails()) {
-				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrors($validator)->withInput();
+				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrorss($validator)->withInput();
 			}
 			$order = Order::find($request->order_id);
 			if($request->claimed_date){

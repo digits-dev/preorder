@@ -811,7 +811,7 @@
 
 			return json_encode(Color::whereIn('id',$colors)
 				->where('status','ACTIVE')
-				->select('id','color_name')->get());
+				->select('id','color_name')->orderBy('color_name','asc')->get());
 		}
 
 		public function getItemSizes(Request $request)
@@ -824,7 +824,7 @@
 
 			return json_encode(Size::whereIn('id',$sizes)
 				->where('status','ACTIVE')
-				->select('id','size')->get());
+				->select('id','size')->orderBy('size','asc')->get());
 		}
 
 		public function getItemModels(Request $request)
@@ -837,7 +837,7 @@
 
 			return json_encode(ItemModel::whereIn('id',$models)
 				->where('status','ACTIVE')
-				->select('id','model_name')->get());
+				->select('id','model_name')->orderBy('model_name','asc')->get());
 		}
 		
 		public function itemDelete()
