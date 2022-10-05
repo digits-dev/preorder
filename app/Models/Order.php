@@ -25,6 +25,7 @@ class Order extends Model
         'total_qty',
         'total_amount',
         'order_statuses_id',
+        'payment_statuses_id',
         'payment_methods_id'
     ];
 
@@ -32,6 +33,7 @@ class Order extends Model
     {
         return $query->where('customers_id',$customer)
             ->where('campaigns_id',$campaign)
+            ->where('payment_statuses_id','!=',2)
             ->select('id')->get()->count();
     }
 

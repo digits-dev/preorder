@@ -499,7 +499,7 @@
 			}
 
 			if ($request->over_qty == 1) {
-				return redirect(CRUDBooster::mainpath('add'))->withErrors(["message"=>"Please check over qty detected!"])->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->with("message","Please check over qty detected!")->withInput();
 			}
 
 			$customer = Customer::updateOrCreate(['email_address' => $request->email_address],[
@@ -556,8 +556,8 @@
 						->decrement('dtc_reserved_qty',$request->f_qty[$key]);
 				}
 			}
-			
-			CRUDBooster::insertLog(cbLang("log_add", ['name' => 'Created an order '.$order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
+
+			CRUDBooster::insertLog(cbLang("log_add", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 			
 			return redirect(CRUDBooster::mainpath())->with([
 				'message_type' => 'success', 
@@ -590,6 +590,8 @@
 					->increment('dtc_reserved_qty', $item->qty);
 			}
 
+			CRUDBooster::insertLog(cbLang("log_update", ['name' => $order->reference.' cancelled ', 'module' => CRUDBooster::getCurrentModule()->name]));
+
 			return redirect(CRUDBooster::mainpath())->with(['message_type' => 'warning', 'message' =>"Order ".$order->reference." has been cancelled!"]);
 			
 		}
@@ -610,7 +612,7 @@
             ]);
 
 			if ($validator->fails()) {
-				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrorss($validator)->withInput();
+				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrors($validator)->withInput();
 			}
 			$order = Order::find($request->order_id);
 			if($request->claimed_date){
@@ -626,6 +628,8 @@
 				$order->invoice_number = $request->invoice_number;
 				$order->save();
 			}
+
+			CRUDBooster::insertLog(cbLang("log_update", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 
 			return redirect(CRUDBooster::mainpath())->with(['message_type' => 'success', 'message' => 'Order has been updated!']);
 		}
