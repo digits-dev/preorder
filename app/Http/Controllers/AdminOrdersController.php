@@ -556,7 +556,9 @@
 						->decrement('dtc_reserved_qty',$request->f_qty[$key]);
 				}
 			}
-
+			
+			CRUDBooster::insertLog(cbLang("log_add", ['name' => 'Created an order '.$order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
+			
 			return redirect(CRUDBooster::mainpath())->with([
 				'message_type' => 'success', 
 				'message' => 'Order reserved!',
