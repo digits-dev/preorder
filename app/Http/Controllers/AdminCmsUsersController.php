@@ -144,8 +144,10 @@ class AdminCmsUsersController extends CBController {
 	public function usersUpload(Request $request)
 	{
 		$errors = array();
+		$path_excel = $request->file('import_file')->store('temp');
+		$path = storage_path('app').'/'.$path_excel;
 		HeadingRowFormatter::default('none');
-		$headings = (new HeadingRowImport)->toArray($request->file('import_file')->path());
+		$headings = (new HeadingRowImport)->toArray($path);
 		//check headings
 		$header = array("NAME","EMAIL","PRIVILEGE","CHANNEL","STORE");
 
@@ -159,7 +161,7 @@ class AdminCmsUsersController extends CBController {
 			return redirect()->back()->with(['message_type' => 'danger', 'message' => 'Failed ! Please check template headers, mismatched detected.']);
 		}
 		HeadingRowFormatter::default('slug');
-		$array = Excel::toArray(new UserImport, $request->file('import_file')->path());
+		$array = Excel::toArray(new UserImport, $path);
 		$emails = array_unique(array_column($array[0], "email"));
 		$stores = array_unique(array_column($array[0], "store"));
 		$privilege = array_unique(array_column($array[0], "privilege"));
@@ -184,7 +186,7 @@ class AdminCmsUsersController extends CBController {
 			return redirect()->back()->with(['message_type' => 'danger', 'message' => 'Failed ! Please check '.implode(", ",$errors)]);
 		}
 
-		Excel::import(new UserImport, $request->file('import_file')->path());
+		Excel::import(new UserImport, $path);
 
 		return redirect()->back()->with(['message_type' => 'success', 'message' => 'Upload complete!']);
 	}

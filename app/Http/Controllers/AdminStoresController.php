@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 	use App\Models\Store;
@@ -342,11 +342,13 @@
 
 	    }
 
-		public function storeUpload()
+		public function storeUpload(Request $request)
 		{
 			$errors = array();
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
             HeadingRowFormatter::default('none');
-            $headings = (new HeadingRowImport)->toArray(request('import_file')->getRealPath());
+            $headings = (new HeadingRowImport)->toArray($path);
             //check headings
             $header = array("CONCEPT","CHANNEL","STORE NAME","STATUS");
 
@@ -360,7 +362,7 @@
                 return redirect()->back()->with(['message_type' => 'danger', 'message' => 'Failed ! Please check template headers, mismatched detected.']);
 			}
             HeadingRowFormatter::default('slug');
-            $array = Excel::toArray(new StoreImport, request('import_file')->getRealPath());
+            $array = Excel::toArray(new StoreImport, $path);
             $stores = array_unique(array_column($array[0], "store_name"));
 
             //data checking
@@ -375,7 +377,7 @@
                 return redirect()->back()->with(['message_type' => 'danger', 'message' => 'Failed ! Please check '.implode(", ",$errors)]);
             }
 
-            Excel::import(new StoreImport, request('import_file')->getRealPath());
+            Excel::import(new StoreImport, $path);
 
             return redirect()->back()->with(['message_type' => 'success', 'message' => 'Upload complete!']);
 		}

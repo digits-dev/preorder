@@ -15,7 +15,6 @@
 	use App\Models\Campaign;
 	use App\Models\Color;
 	use App\Models\FreebiesCategory;
-	use App\Models\ItemCategory;
 	use App\Models\ItemModel;
 	use App\Models\Size;
 	use Maatwebsite\Excel\Facades\Excel;
