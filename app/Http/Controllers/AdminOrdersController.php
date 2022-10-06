@@ -510,7 +510,6 @@
 			$orderLimit = Campaign::withOrderLimit($request->campaigns_id);
 			$customerOrderCount = Order::withCustomerOrder($customer->id,$request->campaigns_id) + 1;
 			if($orderLimit < $customerOrderCount){
-				session()->flash("error","Order limit reached for this customer!");
 				return redirect(CRUDBooster::mainpath('add'))->with(["message"=>"Order limit reached for this customer!","message_type"=>"danger"])->withInput();
 			}
 
@@ -557,11 +556,11 @@
 
 			CRUDBooster::insertLog(cbLang("log_add", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 			
-			CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success');
-			// return redirect(CRUDBooster::mainpath())->with([
-			// 	'message' => 'Order reserved!',
-			// 	'message_type' => 'success'
-			// ]);
+			// CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success');
+			return redirect(CRUDBooster::mainpath())->with([
+				'message' => 'Order reserved!',
+				'message_type' => 'success'
+			]);
 			
 		}
 
