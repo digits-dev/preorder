@@ -93,15 +93,6 @@ label.error{
         </div>
     @endif
 
-    @if(session('error'))
-        <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{session('error')}}
-        </div>
-    @endif
-
     <div class='panel panel-default'>
         <div class='panel-heading'>
         <h3 class="box-title text-center"><b>Pre-Order</b></h3>
@@ -298,6 +289,7 @@ label.error{
 
 @endsection
 @push('bottom')
+
 <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"
       integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8JpG/S0GUMZwebnVFLPd6SU5yg=="

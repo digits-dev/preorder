@@ -7,15 +7,12 @@
 	use App\Exports\OrderExport;
 	use App\Models\Campaign;
 	use App\Models\Channel;
-	use App\Models\Color;
 	use App\Models\Customer;
 	use App\Models\Item;
-	use App\Models\ItemModel;
 	use App\Models\Order;
 	use App\Models\OrderFreebiesSetup;
 	use App\Models\OrderLine;
 	use App\Models\PaymentMethod;
-	use App\Models\Size;
 	use App\Models\Store;
 	use Illuminate\Support\Facades\Validator;
 	use Maatwebsite\Excel\Facades\Excel;
@@ -499,7 +496,7 @@
 			}
 
 			if ($request->over_qty == 1) {
-				return redirect(CRUDBooster::mainpath('add'))->with(["error","Please check over qty detected!"])->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->with(["message"=>"Please check over qty detected!","message_type"=>"danger"])->withInput();
 			}
 
 			$customer = Customer::updateOrCreate(['email_address' => $request->email_address],[
@@ -513,7 +510,8 @@
 			$orderLimit = Campaign::withOrderLimit($request->campaigns_id);
 			$customerOrderCount = Order::withCustomerOrder($customer->id,$request->campaigns_id) + 1;
 			if($orderLimit < $customerOrderCount){
-				return redirect(CRUDBooster::mainpath('add'))->with(["error"=>"Order limit reached for this customer!"])->withInput();
+				session()->flash("error","Order limit reached for this customer!");
+				return redirect(CRUDBooster::mainpath('add'))->with(["message"=>"Order limit reached for this customer!","message_type"=>"danger"])->withInput();
 			}
 
 			$order = Order::firstOrCreate([
@@ -559,10 +557,11 @@
 
 			CRUDBooster::insertLog(cbLang("log_add", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 			
-			return redirect(CRUDBooster::mainpath())->with([
-				'message_type' => 'success', 
-				'message' => 'Order reserved!',
-			]);
+			CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success');
+			// return redirect(CRUDBooster::mainpath())->with([
+			// 	'message' => 'Order reserved!',
+			// 	'message_type' => 'success'
+			// ]);
 			
 		}
 
