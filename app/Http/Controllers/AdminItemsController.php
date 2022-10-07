@@ -610,7 +610,7 @@
 			$sizes = array_unique(array_column($excelData[0], "size"));
 			$models = array_unique(array_column($excelData[0], "model"));
 			$campaigns = array_unique(array_column($excelData[0], "campaign"));
-			$isFreebies = array_unique(array_column($excelData[0], "is_freebie"));
+			$isFreebies = array_unique(array_column($excelData[0], "item_type"));
 			$freebie_categories = array_unique(array_column($excelData[0], "freebie_category"));
 			$included_freebies = array_unique(array_column($excelData[0], "included_freebie"));
 			$uploaded_items = array_column($excelData[0], "digits_code");

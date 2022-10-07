@@ -149,7 +149,7 @@ table.table.table-bordered th {
 
                 <div class="box-body no-padding">
                     <div class="table-responsive">
-                        <table class="table table-bordered noselect" id="dr-items">
+                        <table class="table table-bordered" id="order-items">
                             <thead>
                                 <tr style="background: #0047ab; color: white">
                                     <th width="10%" class="text-center">{{ trans('label.table.digits_code') }}</th>

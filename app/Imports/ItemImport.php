@@ -39,7 +39,7 @@ class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
             'dtc_wh'            => $row["wh_qty"],
             'dtc_reserved_qty'  => $row["wh_qty"],
             'included_freebies' => (empty($row["included_freebie"])) ? null : rtrim(FreebiesCategory::withFreebie($row["included_freebie"]),","),
-            'is_freebies'       => (($row["is_freebie"]) == "MAIN ITEM") ? 0 : 1,
+            'is_freebies'       => (($row["item_type"]) == "MAIN ITEM") ? 0 : 1,
             'freebies_categories_id' => (empty($row["freebie_category"])) ? null : FreebiesCategory::withName($row["freebie_category"])->id,
             'campaigns_id'      => (empty($row["campaign"])) ? null : Campaign::withName($row["campaign"])->id
         ]);

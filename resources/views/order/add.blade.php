@@ -392,7 +392,7 @@ $(document).ready(function() {
         let selected_campaign = $(this).val();
         let limit = $("#campaigns_id option:selected").attr('data-limit');
         $('#max_order_qty').val(limit);
-        $('#model').removeAttr('disabled');
+        
         $('#model').empty().append('<option selected="selected" value="">Please select a model</option>');
         
         $.ajax({
@@ -411,6 +411,7 @@ $(document).ready(function() {
                         text : item.model_name 
                     }));
                 });
+                $('#model').removeAttr('disabled');
             }
         });
 
@@ -441,7 +442,7 @@ $(document).ready(function() {
 
     $('#model').change(function(){
         let selected_model = $(this).val();
-        $('#color').removeAttr('disabled');
+        
         $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
         $.ajax({
             url: "{{ route('item.getItemColors') }}",
@@ -459,6 +460,7 @@ $(document).ready(function() {
                         text : item.color_name 
                     }));
                 });
+                $('#color').removeAttr('disabled');
             }
         });
 
@@ -467,7 +469,7 @@ $(document).ready(function() {
     $('#color').change(function(){
         let selected_color = $(this).val();
         let selected_model = $('#model').val();
-        $('#size').removeAttr('disabled');
+        
 
         $.ajax({
             url: "{{ route('item.getItemSizes') }}",
@@ -486,6 +488,7 @@ $(document).ready(function() {
                         text : item.size 
                     }));
                 });
+                $('#size').removeAttr('disabled');
             }
         });
     });
