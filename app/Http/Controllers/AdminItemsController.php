@@ -804,6 +804,8 @@
 		public function getItemColors(Request $request)
 		{
 			$colors = Item::where('item_models_id',$request->model_id)
+				->where('is_freebies',0)
+				->where('dtc_reserved_qty','!=',0)
 				->select('colors_id')
 				->distinct()
 				->get();
@@ -817,6 +819,8 @@
 		{
 			$sizes = Item::where('item_models_id',$request->model_id)
 				->where('colors_id',$request->color_id)
+				->where('is_freebies',0)
+				->where('dtc_reserved_qty','!=',0)
 				->select('sizes_id')
 				->distinct()
 				->get();
@@ -830,6 +834,7 @@
 		{
 			$models = Item::where('campaigns_id',$request->campaign_id)
 				->where('is_freebies',0)
+				->where('dtc_reserved_qty','!=',0)
 				->select('item_models_id')
 				->distinct()
 				->get();
