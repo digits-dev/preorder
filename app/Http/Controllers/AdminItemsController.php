@@ -161,14 +161,14 @@
                         "url"=>route('item.view')];
                 }
 				$this->index_button[] = ['label'=>'Export Items','url'=>"javascript:showItemExport()",'icon'=>'fa fa-download'];
-				if(CRUDBooster::isSuperadmin()){
-                    $this->index_button[] = [
-                        "title"=>"Clear Items",
-                        "label"=>"Clear Items",
-                        "icon"=>"fa fa-times",
-                        "color"=>"danger",
-                        "url"=>"javascript:showDeleteItemsConfirmation()"];
-                }
+				// if(CRUDBooster::isSuperadmin()){
+                //     $this->index_button[] = [
+                //         "title"=>"Clear Items",
+                //         "label"=>"Clear Items",
+                //         "icon"=>"fa fa-times",
+                //         "color"=>"danger",
+                //         "url"=>"javascript:showDeleteItemsConfirmation()"];
+                // }
             }
 
 
