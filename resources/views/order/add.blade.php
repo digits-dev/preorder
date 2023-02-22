@@ -27,7 +27,7 @@ table.table.table-bordered th {
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
-input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
@@ -40,7 +40,7 @@ label.error{
     color: red;
 }
 
-@media only screen and (max-width: 600px) { 
+@media only screen and (max-width: 600px) {
     body{
         padding: 1px;
         margin: 1px;
@@ -79,7 +79,7 @@ label.error{
         <p><a title='Main Module' href='{{CRUDBooster::mainpath()}}' class="noprint"><i class='fa fa-chevron-circle-left'></i>
         &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>
     @endif
-      
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -97,14 +97,14 @@ label.error{
         <div class='panel-heading'>
         <h3 class="box-title text-center"><b>Pre-Order</b></h3>
         </div>
-        
+
         <form action="{{ route('preorder.order') }}" method="POST" id="preorder" autocomplete="off" role="form" enctype="multipart/form-data">
         <input type="hidden" name="_token" id="token" value="{{csrf_token()}}" >
         <input type="hidden" name="over_qty" id="over_qty" value="0" >
         <input type="hidden" name="with_freebies" id="with_freebies" value="0" >
         <input type="hidden" name="max_freebies" id="max_freebies" value="0" >
         <input type="hidden" name="max_order_qty" id="max_order_qty" value="0" >
-        
+
         <div class='panel-body' id="order-details">
 
             <div class="col-md-6 col-sm-6">
@@ -130,7 +130,7 @@ label.error{
                                     <input class="form-control" type="text" placeholder="First Name Last Name" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" required>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td style="width: 30%">
                                     <b>Customer Contact #: <span style="color:red">*</span></b>
@@ -168,7 +168,7 @@ label.error{
                             @foreach ($campaigns as $campaign)
                                 <option data-limit="{{ $campaign->max_order_count }}" value="{{ $campaign->id }}">{{ $campaign->campaigns_name }}</option>
                             @endforeach
-                            
+
                         </select>
                     </div>
                 </div>
@@ -180,7 +180,7 @@ label.error{
                             @foreach ($channels as $channel)
                                 <option value="{{ $channel->id }}">{{ $channel->channel_name }}</option>
                             @endforeach
-                            
+
                         </select>
                     </div>
                 </div>
@@ -191,7 +191,7 @@ label.error{
                             @foreach ($stores as $store)
                                 <option value="{{ $store->id }}">{{ $store->store_name }}</option>
                             @endforeach
-                            
+
                         </select>
                     </div>
                 </div>
@@ -201,7 +201,7 @@ label.error{
                         <label class="control-label">Model: </label>
                         <select id='model' class='form-control' disabled>
                             <option value=''>Please select a model</option>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -210,7 +210,7 @@ label.error{
                         <label class="control-label">Color: </label>
                         <select id='color' class='form-control' disabled>
                             <option value=''>Please select a color</option>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -219,7 +219,7 @@ label.error{
                         <label class="control-label">Size: </label>
                         <select id='size' class='form-control' disabled>
                             <option value=''>Please select a size</option>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ label.error{
                                     <td align="right"> <strong>{{ trans('label.table.total_quantity') }}</strong> </td>
                                     <td> <input type='number' name="total_quantity" class="form-control text-center" id="totalQuantity" value="0" readonly> </td>
                                     <td>
-                                        <input type='text' class="form-control text-center" id="totalAmount" value="0" readonly> 
+                                        <input type='text' class="form-control text-center" id="totalAmount" value="0" readonly>
                                         <input type="hidden" name="total_amount" id="total_Amount" value="0">
                                     </td>
                                     <td colspan="2"> </td>
@@ -269,8 +269,8 @@ label.error{
                     </div>
                 </div>
 
-                
-            
+
+
             </div>
 
         </div>
@@ -279,9 +279,12 @@ label.error{
             @if(g('return_url'))
                 <a href="{{ g("return_url") }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
+                <button class="btn btn-danger pull-right" type="button" id="btnDiscount" style="margin-right: 5px; display:none;"> <i class="fa fa-money" ></i> Discount</button>
             @else
                 <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
+
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
+                <button class="btn btn-danger pull-right" type="button" id="btnDiscount" style="margin-right: 5px; display:none;"> <i class="fa fa-money" ></i> Discount</button>
             @endif
         </div>
         </form>
@@ -302,6 +305,8 @@ label.error{
 var token = $("#token").val();
 var stack = [];
 var orderLimit = false;
+var hasDiscounted = false; //2023-02-22
+
 $(document).ready(function() {
     $('.error').hide();
     $(function(){
@@ -339,7 +344,7 @@ $(document).ready(function() {
         var price = calculatePrice(qty, rate);
         var rsv_qty = $("#ajax_"+code).val();
         //check if input qty > reservable qty
-        
+
         if($(this).val().length == 0){
             setTimeout(() => {
                 Swal.fire('Warning!','Please enter valid qty!','warning');
@@ -360,13 +365,13 @@ $(document).ready(function() {
         $("#amount_" + id).val(price);
         getTotalComputations();
     });
-    
+
     $('#email_address').keyup(function(){
         $('.error').hide();
     });
 
     $('#email_address').focusout(function(){
-        
+
         let email = $(this).val();
         $.ajax({
         url: "{{ route('preorder.getCustomer') }}",
@@ -381,7 +386,7 @@ $(document).ready(function() {
                     $('#customer_name').val(data.customer_name);
                     $('#contact_number').val(data.contact_number);
                     $('#order_count').text('0 orders');
-                    $('#payment_methods_id option[value="'+data.payment_methods_id+'"]').attr('selected', 'selected').trigger('change'); 
+                    $('#payment_methods_id option[value="'+data.payment_methods_id+'"]').attr('selected', 'selected').trigger('change');
                 }
             }
         });
@@ -392,9 +397,9 @@ $(document).ready(function() {
         let selected_campaign = $(this).val();
         let limit = $("#campaigns_id option:selected").attr('data-limit');
         $('#max_order_qty').val(limit);
-        
+
         $('#model').empty().append('<option selected="selected" value="">Please select a model</option>');
-        
+
         $.ajax({
             url: "{{ route('item.getItemModels') }}",
             dataType: "json",
@@ -405,10 +410,10 @@ $(document).ready(function() {
             },
             success: function(data){
                 $.each(data, function (i, item) {
-                    
-                    $('#model').append($('<option>', { 
+
+                    $('#model').append($('<option>', {
                         value: item.id,
-                        text : item.model_name 
+                        text : item.model_name
                     }));
                 });
                 $('#model').removeAttr('disabled');
@@ -442,7 +447,7 @@ $(document).ready(function() {
 
     $('#model').change(function(){
         let selected_model = $(this).val();
-        
+
         $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
         $.ajax({
             url: "{{ route('item.getItemColors') }}",
@@ -454,10 +459,10 @@ $(document).ready(function() {
             },
             success: function(data){
                 $.each(data, function (i, item) {
-                    
-                    $('#color').append($('<option>', { 
+
+                    $('#color').append($('<option>', {
                         value: item.id,
-                        text : item.color_name 
+                        text : item.color_name
                     }));
                 });
                 $('#color').removeAttr('disabled');
@@ -469,7 +474,7 @@ $(document).ready(function() {
     $('#color').change(function(){
         let selected_color = $(this).val();
         let selected_model = $('#model').val();
-        
+
 
         $.ajax({
             url: "{{ route('item.getItemSizes') }}",
@@ -482,10 +487,10 @@ $(document).ready(function() {
             },
             success: function(data){
                 $.each(data, function (i, item) {
-                    
-                    $('#size').append($('<option>', { 
+
+                    $('#size').append($('<option>', {
                         value: item.id,
-                        text : item.size 
+                        text : item.size
                     }));
                 });
                 $('#size').removeAttr('disabled');
@@ -518,7 +523,7 @@ $(document).ready(function() {
             success: function (data) {
 
                 if (data.status_no == 1) {
-                    
+
                     var data = data.items;
                     $('#ui-id-2').css('display', 'none');
                     response($.map(data, function (item) {
@@ -557,7 +562,7 @@ $(document).ready(function() {
             if (!in_array(e.id, stack)) {
                 stack.push(e.id);
                 var max_f = e.included_freebie;
-                $("#model").attr("disabled","disabled");
+                // $("#model").attr("disabled","disabled");//2023-02-22
 
                 var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
                         '<td><input class="form-control text-center" type="text" tabindex="-1" name="digits_code[]" value="' + e.item_code + '" readonly></td>' +
@@ -574,7 +579,7 @@ $(document).ready(function() {
                     new_row +='<tr id="freebies_'+e.id+'">'+
                             '<td colspan="6">'+
                             '<table class="table table-bordered noselect items" id="order-freebies" style="display:none;">'+
-                            
+
                             '<tbody>'+
                                 '<tr class="dynamicFreebiesRows' + e.id + '"> </tr>'+
                                 '<tr class="tableFreebiesInfo">'+
@@ -589,13 +594,13 @@ $(document).ready(function() {
                             '</table>'+
                         '</td></tr>';
                 }
-            
+
                 $(new_row).insertAfter($('table#order-items tr.dynamicRows:last'));
                 getTotalComputations();
                 $('.tableInfo').show();
                 //update available qty
                 $(function(){
-                    setInterval(function() { 
+                    setInterval(function() {
                         updateReservableQty();
                     },500);
                 });
@@ -623,7 +628,7 @@ $(document).ready(function() {
                                         '<td width="10%"><input class="form-control text-center freebies-reservable" type="text" tabindex="-1" name="f_reservable_qty[]" data-code="' + item.digits_code + '" id="ajax_'+item.digits_code+'" value="'+item.wh_reserved_qty+'" readonly></td>'+
                                         '<input type="hidden" name="f_item_id[]" value="' + item.id + '">' +
                                         '<td width="10%" class="text-center"><button id="'+item.id+'" data-id="' + e.item_code + '" class="btn btn-xs btn-danger delete_freebies"><i class="glyphicon glyphicon-trash"></i></button></td></tr>';
-                                    
+
                                     $(freebies_row).insertAfter($('table#order-freebies tr.dynamicFreebiesRows' + e.id + ':last'));
                                     $('#checkbox-'+ item.digits_code).trigger('click');
                                     $(".fcategory"+item.category).css("background-color", item.background_color);
@@ -632,16 +637,16 @@ $(document).ready(function() {
 
                             //update available qty
                             $(function(){
-                                setInterval(function() { 
+                                setInterval(function() {
                                     updateFreebiesReservableQty();
                                 },500);
 
-                                
+
                             });
                         }
                     });
                 }
-            } 
+            }
             else {
                 $('#qty_' + e.item_code).val(function (i, oldval) {
                     return ++oldval;
@@ -658,13 +663,13 @@ $(document).ready(function() {
                     return 0;
                 }
                 });
-                
+
                 getTotalComputations();
             }
 
             $(this).val('');
-            resetDropDown();
-            
+            resetDropDownV2();
+
             return false;
         }
     },
@@ -672,17 +677,27 @@ $(document).ready(function() {
         autoFocus: true
     });
 
-    
+
 
     $('#btnSubmit').bind('keypress keydown keyup', function(e){
        if(e.keyCode == 13) { e.preventDefault(); }
+    });
+
+    $("#btnDiscount").click(function(event) {
+        let tAmount = $("#total_Amount").val();
+        let tDicount = tAmount-2000;
+        $("#totalAmount").val(currencyFormat(tDicount));
+        $("#total_Amount").val(tDicount);
+        hasDiscounted = true;
+        Swal.fire('Info!','An amount of P2000 has been deducted to total amount!','success');
+        $("#btnDiscount").attr("disabled","disabled");
     });
 
     $("#btnSubmit").click(function(event) {
         event.preventDefault();
         let rowCount = parseInt($('#order-items tr.nr').length);
         let rowFreebiesCount = parseInt($('#order-freebies tr.nr-freebies').length);
-        
+
         if(validateEmail($('#email_address').val())==false){
             $('#invalid_email').show();
             return false;
@@ -693,7 +708,7 @@ $(document).ready(function() {
         }
 
         // if($("#over_qty").val() == 1){
-        //     Swal.fire('Warning!','Over quantity detected!','warning'); 
+        //     Swal.fire('Warning!','Over quantity detected!','warning');
         // }
 
         if(checkQty()){
@@ -703,6 +718,11 @@ $(document).ready(function() {
 
         if(rowCount == 0){
             Swal.fire('Warning!','Please add at least 1 item!','warning');
+            return false;
+        }
+
+        if(rowCount >= 2 && !hasDiscounted){
+            Swal.fire('Warning!','Please click discount!','warning');
             return false;
         }
 
@@ -744,7 +764,7 @@ $(document).on('click', '.freebies-checkbox', function(){
 
 $(document).on('click', '.delete_freebies', function () {
     var v = $(this).attr("id");
-    
+
     $(this).closest("tr").remove();
     let cItemFreebies = $(this).attr('data-id');
     $("#totalFreeSKUS"+cItemFreebies).text(calculateFreeBiesTotalSKU(cItemFreebies));
@@ -755,11 +775,28 @@ $(document).on('click', '.delete_freebies', function () {
 function resetDropDown() {
     $("#model").val('');
     $("#color").val('');
+
     $("#size").val('');
     $("#color").attr('disabled','disabled');
     $("#size").attr('disabled','disabled');
     $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
     $('#size').empty().append('<option selected="selected" value="">Please select a size</option>');
+}
+
+function resetDropDownV2() { //2023-02-22
+    $("#model").val('');
+    $("#color").val('');
+    $("#size").val('');
+    $("#color").empty();
+    $("#size").empty();
+    $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
+    $('#size').empty().append('<option selected="selected" value="">Please select a size</option>');
+
+    let rowCount = parseInt($('#order-items tr.nr').length);
+
+    if(rowCount >= 2){
+        $("#btnDiscount").css("display","block");
+    }
 }
 
 function validateEmail(email) {
@@ -824,19 +861,19 @@ function checkFreebies() {
 
 function calculateFreeBiesTotalSKU(item_code) {
     let freeBiesTotalSKU = 0;
-  
+
     $('.check-box-'+item_code).each(function () {
         if($(this).prop("checked") == true) {
             freeBiesTotalSKU += 1;
         }
     });
-  
+
     return freeBiesTotalSKU;
 }
 
 function calculateFreeBiesTotalQuantity(item_code) {
     let freeBiesTotalQty = 0;
-  
+
     $('.freebies_quantity'+item_code).each(function () {
         let selectedItem = $(this).attr('data-code');
         let selectedCheckbox = $("#checkbox-"+selectedItem).attr('data-code');
@@ -844,13 +881,13 @@ function calculateFreeBiesTotalQuantity(item_code) {
             freeBiesTotalQty += parseInt($("#f_qty_"+selectedItem).val());
         }
     });
-  
+
     return freeBiesTotalQty;
 }
 
 function calculateFreeBiesTotalAmount(item_code) {
     let freeBiesTotalAmount = 0;
-  
+
     $('.freebies_amount'+item_code).each(function () {
         let selectedItem = $(this).attr('data-code');
         let selectedCheckbox = $("#checkbox-"+selectedItem).attr('data-code');
@@ -858,7 +895,7 @@ function calculateFreeBiesTotalAmount(item_code) {
             freeBiesTotalAmount += parseFloat($("#f_amount_"+selectedItem).val());
         }
     });
-  
+
     return freeBiesTotalAmount.toFixed(2);
 }
 
@@ -885,7 +922,7 @@ function getTotalComputations() {
 
 function updateReservableQty(){
 $('.item-reservable').each(function () {
-     
+
     let item = $(this).attr("data-code");
     let currentItem = $(this).attr("id");
     $.ajax({
