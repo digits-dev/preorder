@@ -40,6 +40,10 @@ label.error{
     color: red;
 }
 
+.swal2-popup{
+    font-size: 1.5rem !important;
+}
+
 @media only screen and (max-width: 600px) {
     body{
         padding: 1px;
