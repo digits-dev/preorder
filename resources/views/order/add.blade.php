@@ -199,7 +199,7 @@ label.error{
                 <div class="col-md-4 col-sm-4 col-xs-4">
                     <div class="form-group">
                         <label class="control-label">Model: </label>
-                        <select id='model' class='form-control' disabled>
+                        <select id='model' class='form-control model' disabled>
                             <option value=''>Please select a model</option>
 
                         </select>
@@ -208,7 +208,7 @@ label.error{
                 <div class="col-md-4 col-sm-4 col-xs-4">
                     <div class="form-group">
                         <label class="control-label">Color: </label>
-                        <select id='color' class='form-control' disabled>
+                        <select id='color' class='form-control color' disabled>
                             <option value=''>Please select a color</option>
 
                         </select>
@@ -217,7 +217,7 @@ label.error{
                 <div class="col-md-4 col-sm-4 col-xs-4">
                     <div class="form-group">
                         <label class="control-label">Size: </label>
-                        <select id='size' class='form-control' disabled>
+                        <select id='size' class='form-control size' disabled>
                             <option value=''>Please select a size</option>
 
                         </select>
@@ -306,6 +306,7 @@ var token = $("#token").val();
 var stack = [];
 var orderLimit = false;
 var hasDiscounted = false; //2023-02-22
+var selectedModel = [];
 
 $(document).ready(function() {
     $('.error').hide();
@@ -447,6 +448,10 @@ $(document).ready(function() {
 
     $('#model').change(function(){
         let selected_model = $(this).val();
+
+        if (!in_array(selected_model, selectedModel)) {
+            selectedModel.push(selected_model);
+        }
 
         $('#color').empty().append('<option selected="selected" value="">Please select a color</option>');
         $.ajax({
@@ -784,6 +789,11 @@ function resetDropDown() {
 }
 
 function resetDropDownV2() { //2023-02-22
+
+    $.each(selectedModel, function (i, item) {
+        $(".model option[value='"+item+"']").prop('disabled', true);
+    });
+
     $("#model").val('');
     $("#color").val('');
     $("#size").val('');
