@@ -58,6 +58,7 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
     public function query()
     {
         $orders = Order::query()
+            ->leftJoin('campaigns','orders.campaigns_id','=','campaigns.id')
             ->leftJoin('channels','orders.channels_id','=','channels.id')
             ->leftJoin('stores','orders.stores_id','=','stores.id')
             ->leftJoin('customers','orders.customers_id','=','customers.id')

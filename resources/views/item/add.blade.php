@@ -1,47 +1,49 @@
 @extends('crudbooster::admin_template')
-@section('content')
 
 @push('head')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.24/dist/sweetalert2.min.css" integrity="sha256-F2TGXW+mc8e56tXYBFYeucG/SgD6qQt4SNFxmpVXdUk=" crossorigin="anonymous">
 
-<style type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.24/dist/sweetalert2.min.css" integrity="sha256-F2TGXW+mc8e56tXYBFYeucG/SgD6qQt4SNFxmpVXdUk=" crossorigin="anonymous">
 
-table.table.table-bordered td {
-  border: 1px solid black;
-}
+    <style type="text/css">
 
-table.table.table-bordered tr {
-  border: 1px solid black;
-}
+        table.table.table-bordered td {
+            border: 1px solid black;
+        }
 
-table.table.table-bordered th {
-  border: 1px solid black;
-}
+        table.table.table-bordered tr {
+            border: 1px solid black;
+        }
 
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
+        table.table.table-bordered th {
+            border: 1px solid black;
+        }
+
+        .noselect {
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Old versions of Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-}
+        }
 
-input[type="number"]::-webkit-outer-spin-button, 
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-input[type="number"] {
-    -moz-appearance: textfield;
-}
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
 
-label.error {
-    color: red;
-}
+        label.error {
+            color: red;
+        }
 
-</style>
+    </style>
 @endpush
+
+@section('content')
 
     @if(g('return_url'))
         <p><a title='Return' href='{{g("return_url")}}' class="noprint"><i class='fa fa-chevron-circle-left'></i>
@@ -68,7 +70,7 @@ label.error {
         <div class='panel-heading'>
         <h3 class="box-title text-center"><b>Item Creation</b></h3>
         </div>
-        {{-- {{ route('item.create') }} --}}
+
         <form action="{{CRUDBooster::mainpath('add-save')}}" method="POST" id="item" autocomplete="off" role="form" enctype="multipart/form-data">
         <input type="hidden" name="_token" id="token" value="{{csrf_token()}}" >
 
@@ -109,20 +111,6 @@ label.error {
                                     </select>
                                 </td>
                             </tr>
-
-                            {{-- <tr>
-                                <td style="width: 25%">
-                                    <b>Category</b>
-                                </td>
-                                <td>
-                                    <select name='item_categories_id' id="item_categories_id" class='form-control' required>
-                                        <option value=''>Please select category</option>
-                                        @foreach ($categories as $category)
-                                            <option {{ old('item_categories_id') == $category->id ? "selected" : "" }} value={{ $category->id }}>{{ $category->category_name }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            </tr> --}}
 
                             <tr>
                                 <td style="width: 25%">
@@ -188,7 +176,7 @@ label.error {
                                 </td>
                                 <td colspan="2">
                                     <input class="form-control" type="number" style="width:100%" name="current_srp" id="current_srp" value="{{ (old('current_srp')) }}" required>
-                                    
+
                                 </td>
                             </tr>
                         </tbody>
@@ -212,7 +200,7 @@ label.error {
                                         @endforeach
                                     </select>
                                 </td>
-                                
+
                             </tr>
 
                             <tr>
@@ -256,14 +244,14 @@ label.error {
                                     </select>
                                 </td>
                             </tr>
-                            
+
                             <tr>
                                 <td style="width: 25%">
                                     <b>WH Qty</b>
                                 </td>
                                 <td colspan="2">
                                     <input class="form-control" type="number" style="width:100%" name="dtc_wh" id="dtc_wh" value="{{ (old('dtc_wh')) }}" required>
-                                    
+
                                 </td>
                             </tr>
                         </tbody>
