@@ -258,6 +258,11 @@ label.error{
                             </thead>
                             <tbody>
                                 <tr class="dynamicRows"> </tr>
+                                <tr class="tableDiscount">
+                                    <td colspan="3" class="text-right"><b>Discount</b></td>
+                                    <td><input type='text' class="form-control text-center amount" name="discount" id="discount" value="0" readonly></td>
+                                    <td colspan="2">Less 20% for minimum purchase of 10k.<br>Maximum discount cap is at 15K</td>
+                                </tr>
                                 <tr class="tableInfo">
                                     <td align="center"> <strong>{{ trans('label.table.total_skus') }} : <span id="totalSKUS"></span></strong> </td>
                                     <td align="right"> <strong>{{ trans('label.table.total_quantity') }}</strong> </td>
@@ -315,6 +320,7 @@ $(document).ready(function() {
     $(function(){
         $('body').addClass("sidebar-collapse");
         $('.tableInfo').hide();
+        $('.tableDiscount').hide();
 
         $('form').on('focus', 'input[type=number]', function (e) {
             $(this).on('wheel.disableScroll', function (e) {
@@ -366,6 +372,7 @@ $(document).ready(function() {
             $("#over_qty").val(0);
         }
         $("#amount_" + id).val(Number(price).toFixed(2));
+        calculateDiscountAmount();
         getTotalComputations();
     });
 
@@ -574,7 +581,7 @@ $(document).ready(function() {
                         '<td><input class="form-control text-center" type="text" tabindex="-1" name="digits_code[]" value="' + e.item_code + '" readonly></td>' +
                         '<td><input class="form-control" type="text" tabindex="-1" id="item_description' + e.item_code + '" value="' + e.value + '" readonly></td>' +
                         '<td><input class="form-control text-center order_qty item_quantity" data-id="' + e.id + '" data-rate="' + e.current_price + '"  data-code="' + e.item_code + '" type="number" min="1" max="'+e.reservable_qty+'" oninput="validity.valid||(value=0);" id="qty_' + e.item_code + '" name="qty[]" value="1"></td>' +
-                        '<td><input class="form-control text-center amount" type="text" tabindex="-1" id="amount_'+e.id+'" value="'+ e.current_price+'" name="amount[]" readonly></td>' +
+                        '<td><input class="form-control text-center amount item-amount" type="text" tabindex="-1" id="amount_'+e.id+'" value="'+ e.current_price+'" name="amount[]" readonly></td>' +
                         '<td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="reservable_qty[]" data-code="' + e.item_code + '" id="ajax_'+e.item_code+'" value="'+e.reservable_qty+'" readonly></td>'+
                         '<input type="hidden" name="item_id[]" value="' + e.id + '">' +
                         '<td class="text-center"><button id="'+e.id+'" tabindex="-1" class="btn btn-xs btn-danger delete_item"><i class="glyphicon glyphicon-trash"></i></button></td>' +
@@ -602,6 +609,7 @@ $(document).ready(function() {
                 }
 
                 $(new_row).insertAfter($('table#order-items tr.dynamicRows:last'));
+                calculateDiscountAmount();
                 getTotalComputations();
                 $('.tableInfo').show();
                 //update available qty
@@ -834,6 +842,26 @@ function calculateTotalAmount() {
   });
   $("#total_Amount").val(subTotal);
   return currencyFormat(subTotal);
+}
+
+function calculateDiscountAmount() {
+  let discount = 0;
+  let finalDiscount = 0;
+  $('.item-amount').each(function () {
+    discount += parseFloat($(this).val());
+  });
+  $('.tableDiscount').show();
+  if(discount < 10000){
+    $('.tableDiscount').hide();
+  }
+  if(discount > 10000){
+    finalDiscount = discount*0.20*-1;
+  }
+  if(finalDiscount < -15000){
+    finalDiscount = -15000;
+  }
+
+  $("#discount").val(Number(finalDiscount).toFixed(2));
 }
 
 function calculateTotalQuantity() {
