@@ -31,10 +31,10 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             'Freebie Category',
             'Available Qty'
         ];
-    } 
+    }
 
     public function map($item): array {
-        
+
         return [
             $item->digits_code,
             $item->upc_code,
