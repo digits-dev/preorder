@@ -32,7 +32,7 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
             'Claim Status',
             'Claimed Date',
         ];
-    } 
+    }
 
     public function map($order): array {
         return [
@@ -81,6 +81,8 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
                 'claim_statuses.status_name as claim_status',
                 'payment_statuses.status_name as payment_status',
                 'payment_methods.payment_method');
+
+        $orders->whereNull('orders.deleted_at');
 
         if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands"])){
             $orders->where('orders.stores_id',CRUDBooster::myStore());
