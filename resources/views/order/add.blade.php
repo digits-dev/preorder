@@ -616,17 +616,17 @@
                                 '<td><input class="form-control text-center order_qty item_quantity" data-id="' +
                                 e.id + '" data-rate="' + e.current_price + '"  data-code="' + e
                                 .item_code +
-                                '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="qty_' +
-                                e.item_code + '" name="qty[]" value="1" readonly></td>' +
-                                '<td><input class="form-control text-center amount" type="text" id="amount_' +
+                                '" type="number" min="1" max="'+e.reservable_qty+'" oninput="validity.valid||(value=0);" id="qty_' +
+                                e.item_code + '" name="qty[]" value="1"></td>' +
+                                '<td><input class="form-control text-center amount" type="text" tabindex="-1" id="amount_' +
                                 e.id + '" value="' + e.current_price +
                                 '" name="amount[]" readonly></td>' +
                                 '<td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="reservable_qty[]" data-code="' +
-                                e.item_code + '" id="ajax_' + e.item_code + '" value="' + e
-                                .reservable_qty + '" readonly></td>' +
+                                e.item_code + '" id="ajax_' + e.item_code + '" value="' +
+                                e.reservable_qty + '" readonly></td>' +
                                 '<input type="hidden" name="item_id[]" value="' + e.id + '">' +
                                 '<td class="text-center"><button id="' + e.id +
-                                '" class="btn btn-xs btn-danger delete_item"><i class="glyphicon glyphicon-trash"></i></button></td>' +
+                                '" class="btn btn-xs btn-danger delete_item" tabindex="-1"><i class="glyphicon glyphicon-trash"></i></button></td>' +
                                 '</tr>';
                             if (e.included_freebie != null) {
                                 $("#max_freebies").val(max_f.split(",").length);
