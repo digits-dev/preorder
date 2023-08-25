@@ -531,12 +531,14 @@
 					'orders_id' => $order->id,
 					'digits_code' => $digits_code,
 					'qty' => $request->qty[$key],
+                    'onhand_qty' => $request->onhand_qty[$key],
 					'amount' => $request->amount[$key],
 					'available_qty' => $request->reservable_qty[$key]
 				]);
 
+                $reservedQty = $request->qty[$key] - $request->onhand_qty[$key];
 				Item::where('digits_code',$digits_code)
-					->decrement('dtc_reserved_qty',$request->qty[$key]);
+					->decrement('dtc_reserved_qty',$reservedQty);
 			}
 
 			if($request->with_freebies == 1){

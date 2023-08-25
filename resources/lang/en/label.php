@@ -6,6 +6,7 @@ return [
         'item_description' => 'Item Description',
         'qty' => 'Qty',
         'amount' => 'Amount',
+        'onhand_qty' => 'Onhand Qty',
         'reservable_qty' => 'Available Qty',
         'total_quantity' => 'Total Qty',
         'total_free_quantity' => 'Total Freebies Qty',
