@@ -121,7 +121,7 @@
 						"title" => "Update Order",
 						"icon" => "fa fa-pencil",
 						"color" => "warning",
-						'showIf' => '[payment_statuses_id] != '.self::ORDER_CLAIMED,
+						'showIf' => '[claim_statuses_id] != '.self::ORDER_CLAIMED,
 						"url" => CRUDBooster::mainpath('edit/[id]')];
 			}
 
