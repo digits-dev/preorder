@@ -104,7 +104,7 @@ table.table.table-bordered th {
                                 </td>
                                 <td>
                                     <input class="form-control" type="text" style="width:100%" placeholder="INV#" name="claiming_invoice_number" id="claiming_invoice_number" value="{{ (old('claiming_invoice_number')) ?  old('claiming_invoice_number') : $order_details->claiming_invoice_number }}" >
-                                    
+
                                 </td>
                             </tr>
 
@@ -147,11 +147,11 @@ table.table.table-bordered th {
                             </tr>
                             <tr>
                                 <td style="width: 25%">
-                                    <b>Pre-order Invoice#:</b>
+                                    <b>Reservation Invoice#:</b>
                                 </td>
                                 <td colspan="2">
                                     <input class="form-control" type="text" style="width:100%" placeholder="INV#" name="invoice_number" id="invoice_number" value="{{ (old('invoice_number')) ?  old('invoice_number') : $order_details->invoice_number }}" >
-                                    
+
                                 </td>
                             </tr>
                         </tbody>
@@ -191,7 +191,7 @@ table.table.table-bordered th {
                                     <td colspan="2" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
                                     <td align="center" colspan="1">{{$order_details->total_qty}}</td>
                                     <td align="center" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
-                                    
+
                                 </tr>
 
                             </tbody>

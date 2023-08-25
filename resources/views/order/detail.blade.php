@@ -39,7 +39,7 @@ table.table.table-bordered th {
 
     <div class='panel panel-default'>
         <div class='panel-heading'>
-        <h3 class="box-title text-center"><b>Pre-Order Details</b></h3>
+        <h3 class="box-title text-center"><b>Reservation Details</b></h3>
         </div>
 
         <div class='panel-body' id="order-details">
@@ -78,7 +78,7 @@ table.table.table-bordered th {
                                     <b>Claim Status:</b>
                                 </td>
                                 <td width: 25%>
-                                    {!! $order_details->claim_status !!} 
+                                    {!! $order_details->claim_status !!}
                                 </td>
                                 <td style="width: 25%">
                                     <b>Date: </b>{{ (empty($order_details->claimed_date)) ? '' : $order_details->claimed_date }}
@@ -102,7 +102,7 @@ table.table.table-bordered th {
                                     <b>Order Ref#:</b>
                                 </td>
                                 <td>
-                                    {{ $order_details->reference }} 
+                                    {{ $order_details->reference }}
                                 </td>
                                 <td style="width: 50%">
                                 </td>
@@ -132,7 +132,7 @@ table.table.table-bordered th {
                                     {!! $order_details->payment_status !!}
                                 </td>
                                 <td style="width: 50%">
-                                    <b>Pre-order Invoice #: </b>{{ (empty($order_details->invoice_number)) ? '' : $order_details->invoice_number }}
+                                    <b>Reservation Invoice #: </b>{{ (empty($order_details->invoice_number)) ? '' : $order_details->invoice_number }}
                                 </td>
                             </tr>
                         </tbody>
@@ -172,7 +172,7 @@ table.table.table-bordered th {
                                     <td colspan="2" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
                                     <td align="center" colspan="1">{{$order_details->total_qty}}</td>
                                     <td align="center" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
-                                    
+
                                 </tr>
 
                             </tbody>
