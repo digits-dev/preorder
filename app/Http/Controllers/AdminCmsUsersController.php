@@ -21,11 +21,11 @@ class AdminCmsUsersController extends CBController {
 		$this->table               = 'cms_users';
 		$this->primary_key         = 'id';
 		$this->title_field         = "name";
-		$this->button_action_style = 'button_icon';	
-		$this->button_import 	   = false;	
-		$this->button_export 	   = true;	
+		$this->button_action_style = 'button_icon';
+		$this->button_import 	   = false;
+		$this->button_export 	   = true;
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
-	
+
 		# START COLUMNS DO NOT REMOVE THIS LINE
 		$this->col = array();
 		$this->col[] = array("label"=>"Name","name"=>"name");
@@ -34,15 +34,15 @@ class AdminCmsUsersController extends CBController {
 		$this->col[] = array("label"=>"Channel","name"=>"channels_id","join"=>"channels,channel_name");
 		$this->col[] = array("label"=>"Store","name"=>"stores_id","join"=>"stores,store_name");
 		$this->col[] = array("label"=>"Photo","name"=>"photo","image"=>1);
-		$this->col[] = array("label"=>"Status","name"=>"status");		
+		$this->col[] = array("label"=>"Status","name"=>"status");
 		# END COLUMNS DO NOT REMOVE THIS LINE
 
 		# START FORM DO NOT REMOVE THIS LINE
-		$this->form = array(); 		
+		$this->form = array();
 		$this->form[] = array("label"=>"Name","name"=>"name",'width'=>'col-sm-6','validation'=>'required|min:3','readonly'=>(CRUDBooster::isSuperAdmin()) ? false : true );
-		$this->form[] = array("label"=>"Email","name"=>"email",'width'=>'col-sm-6','type'=>'email','validation'=>'required|email|unique:cms_users,email,'.CRUDBooster::getCurrentId(),'readonly'=>(CRUDBooster::isSuperAdmin()) ? false : true);		
-		$this->form[] = array("label"=>"Photo","name"=>"photo",'width'=>'col-sm-6',"type"=>"upload","help"=>"Recommended resolution is 200x200px",'validation'=>'image|max:1000','resize_width'=>90,'resize_height'=>90);											
-		$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name",'width'=>'col-sm-6','validation'=>'required');	
+		$this->form[] = array("label"=>"Email","name"=>"email",'width'=>'col-sm-6','type'=>'email','validation'=>'required|email|unique:cms_users,email,'.CRUDBooster::getCurrentId(),'readonly'=>(CRUDBooster::isSuperAdmin()) ? false : true);
+		$this->form[] = array("label"=>"Photo","name"=>"photo",'width'=>'col-sm-6',"type"=>"upload","help"=>"Recommended resolution is 200x200px",'validation'=>'image|max:1000','resize_width'=>90,'resize_height'=>90);
+		$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name",'width'=>'col-sm-6','validation'=>'required');
 		$this->form[] = array("label"=>"Channel","name"=>"channels_id",'width'=>'col-sm-6',"type"=>"select","datatable"=>"channels,channel_name");
 		$this->form[] = array("label"=>"Store","name"=>"stores_id",'width'=>'col-sm-6',"type"=>"select","datatable"=>"stores,store_name","parent_select"=>"channels_id");
 		$this->form[] = array("label"=>"Password","name"=>"password","type"=>"password",'width'=>'col-sm-6',"help"=>"Please leave empty if not changed");
@@ -51,8 +51,8 @@ class AdminCmsUsersController extends CBController {
 		}
 		// $this->form[] = array("label"=>"Password Confirmation","name"=>"password_confirmation","type"=>"password","help"=>"Please leave empty if not changed");
 		# END FORM DO NOT REMOVE THIS LINE
-				
-	
+
+
 		$this->index_button = array();
 		if(CRUDBooster::getCurrentMethod() == 'getIndex') {
 			if(CRUDBooster::isSuperadmin()){
@@ -78,7 +78,7 @@ class AdminCmsUsersController extends CBController {
 		if(!CRUDBooster::isSuperAdmin()){
 			$query->where('id',CRUDBooster::myId());
 		}
-			
+
 	}
 
 	public function actionButtonSelected($id_selected,$button_name) {
@@ -86,35 +86,35 @@ class AdminCmsUsersController extends CBController {
 		switch ($button_name) {
 			case 'set_status_ACTIVE':
 				DB::table('cms_users')->whereIn('id',$id_selected)->update([
-					'status'=>'ACTIVE', 
+					'status'=>'ACTIVE',
 					'updated_at' => date('Y-m-d H:i:s')
 				]);
 				break;
 			case 'set_status_INACTIVE':
 				DB::table('cms_users')->whereIn('id',$id_selected)->update([
-					'status'=>'INACTIVE', 
+					'status'=>'INACTIVE',
 					'updated_at' => date('Y-m-d H:i:s')
 				]);
 				break;
 			case 'reset_password':
 				DB::table('cms_users')->whereIn('id',$id_selected)->update([
-					'password'=>bcrypt('qwerty2022'),
+					'password'=>bcrypt('qwerty2023'),
 					'updated_at' => date('Y-m-d H:i:s')
 				]);
 				break;
 			default:
 				# code...
 				break;
-		}    
+		}
 	}
 
-	public function getProfile() {			
+	public function getProfile() {
 
 		$this->button_addmore = FALSE;
 		$this->button_cancel  = FALSE;
-		$this->button_show    = FALSE;			
+		$this->button_show    = FALSE;
 		$this->button_add     = FALSE;
-		$this->button_delete  = FALSE;	
+		$this->button_delete  = FALSE;
 
 		if(!CRUDBooster::isSuperAdmin()){
 			$this->hide_form = [
@@ -131,13 +131,13 @@ class AdminCmsUsersController extends CBController {
 
         return $this->view('crudbooster::default.form',$data);
 	}
-	public function hook_before_edit(&$postdata,$id) { 
+	public function hook_before_edit(&$postdata,$id) {
 		$postdata['name'] = strtoupper($postdata['name']);
 		// unset($postdata['password_confirmation']);
 	}
-	public function hook_before_add(&$postdata) { 
-		$postdata['name'] = strtoupper($postdata['name']);  
-		$postdata['status'] = 'ACTIVE';   
+	public function hook_before_add(&$postdata) {
+		$postdata['name'] = strtoupper($postdata['name']);
+		$postdata['status'] = 'ACTIVE';
 	    // unset($postdata['password_confirmation']);
 	}
 
@@ -165,7 +165,7 @@ class AdminCmsUsersController extends CBController {
 		$emails = array_unique(array_column($array[0], "email"));
 		$stores = array_unique(array_column($array[0], "store"));
 		$privilege = array_unique(array_column($array[0], "privilege"));
-		
+
 		//data checking
 		foreach ($emails as $email) {
 			$userDetails = User::where('email',$email)->first();
