@@ -341,7 +341,6 @@
         var token = $("#token").val();
         var stack = [];
         var orderLimit = false;
-        var hasDiscounted = false; //2023-02-22
         var selectedModel = [];
 
         $(document).ready(function() {
@@ -814,11 +813,6 @@
 
                 if (rowCount == 0) {
                     Swal.fire('Warning!', 'Please add at least 1 item!', 'warning');
-                    return false;
-                }
-
-                if (rowCount >= 2 && !hasDiscounted) {
-                    Swal.fire('Warning!', 'Please click discount!', 'warning');
                     return false;
                 }
 
