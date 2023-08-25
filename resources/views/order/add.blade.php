@@ -370,7 +370,7 @@
                 $(this).closest("tr").remove();
                 $('#model').removeAttr('disabled');
                 $("#freebies_" + v).remove();
-                // getTotalComputations();
+                getTotalComputations();
             });
 
             $('#order-items').on('keyup', '.order_qty', function() {
@@ -399,7 +399,7 @@
                     $("#over_qty").val(0);
                 }
                 // $("#amount_" + id).val(Number(price).toFixed(2));
-                // getTotalComputations();
+                getTotalComputations();
             });
 
             $('#email_address').keyup(function() {
@@ -654,7 +654,7 @@
                             }
 
                             $(new_row).insertAfter($('table#order-items tr.dynamicRows:last'));
-                            // getTotalComputations();
+                            getTotalComputations();
                             $('.tableInfo').show();
                             //update available qty
                             $(function() {
@@ -768,7 +768,7 @@
                             //     }
                             // });
 
-                            // getTotalComputations();
+                            getTotalComputations();
                         }
 
                         $(this).val('');
