@@ -648,7 +648,7 @@
                                 '<td><input class="form-control text-center amount item-amount" type="text" tabindex="-1" id="amount_' +
                                 e.id + '" value="' + e.current_price +
                                 '" name="amount[]" readonly></td>' +
-                                '<td><input class="form-control text-center" type="text" tabindex="-1" id="onhand_qty' +
+                                '<td><input class="form-control text-center" type="text" id="onhand_qty' +
                                 e.id + '" value="0" name="onhand_qty[]"></td>' +
                                 '<td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="reservable_qty[]" data-code="' +
                                 e.item_code + '" id="ajax_' + e.item_code + '" value="' + e
