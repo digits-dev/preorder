@@ -56,7 +56,7 @@
 			$this->col[] = ["label"=>"Total Qty","name"=>"total_qty"];
 			$this->col[] = ["label"=>"Total Amount","name"=>"total_amount"];
 			$this->col[] = ["label"=>"Payment Methods","name"=>"payment_methods_id","join"=>"payment_methods,payment_method"];
-			$this->col[] = ["label"=>"Pre-order Invoice #","name"=>"invoice_number"];
+			$this->col[] = ["label"=>"Reservation Invoice #","name"=>"invoice_number"];
 			// $this->col[] = ["label"=>"Order Status","name"=>"order_statuses_id","join"=>"order_statuses,status_style"];
 			$this->col[] = ["label"=>"Payment Status","name"=>"payment_statuses_id","join"=>"payment_statuses,status_style"];
 			$this->col[] = ["label"=>"Claim Status","name"=>"claim_statuses_id","join"=>"claim_statuses,status_style"];
@@ -72,7 +72,7 @@
 			$this->form[] = ['label'=>'Total Amount','name'=>'total_amount','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Order Status','name'=>'order_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'order_statuses,status_name'];
 			$this->form[] = ['label'=>'Payment Method','name'=>'payment_methods_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'payment_methods,payment_method'];
-			$this->form[] = ['label'=>'Pre-order Invoice','name'=>'invoice_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Reservation Invoice','name'=>'invoice_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
 				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
 				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
@@ -430,7 +430,7 @@
             }
 
             $data = [];
-            $data['page_title'] = 'Pre-Order Creation';
+            $data['page_title'] = 'Order Creation';
 			$data['campaigns'] = Campaign::where('status','ACTIVE')->get();
 			$data['channels'] = Channel::where('status','ACTIVE')->get();
 			$data['stores'] = Store::where('status','ACTIVE')->get();
@@ -454,7 +454,7 @@
             }
 
             $data = [];
-            $data['page_title'] = 'Pre-Order Details';
+            $data['page_title'] = 'Order Details';
 			$data['order_details'] = Order::withDetails($id);
 			$data['order_items'] = OrderLine::withDetails($id);
             return view('order.detail',$data);

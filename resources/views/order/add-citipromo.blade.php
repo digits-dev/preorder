@@ -114,7 +114,7 @@
 
     <div class='panel panel-default'>
         <div class='panel-heading'>
-            <h3 class="box-title text-center"><b>Pre-Order</b></h3>
+            <h3 class="box-title text-center"><b>Order</b></h3>
         </div>
 
         <form action="{{ route('preorder.order') }}" method="POST" id="preorder" autocomplete="off" role="form"
