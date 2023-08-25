@@ -444,7 +444,7 @@
 			}
 			$data['paymentMethods'] = PaymentMethod::where('status','ACTIVE')->get();
 			$data['orderSetup'] = OrderFreebiesSetup::where('status','ACTIVE')->first();
-            return view('order.add-citipromo',$data);
+            return view('order.add',$data);
 		}
 
 		public function getDetail($id)
