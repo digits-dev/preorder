@@ -15,6 +15,8 @@ class Size extends Model
     protected $fillable = [
         'size',
         'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function scopeWithName($query, $size)

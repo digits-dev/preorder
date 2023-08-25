@@ -15,6 +15,8 @@ class Color extends Model
     protected $fillable = [
         'color_name',
         'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function scopeWithName($query, $color)

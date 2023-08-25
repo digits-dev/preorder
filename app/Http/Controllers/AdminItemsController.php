@@ -625,26 +625,26 @@
                 $brandDetails = Brand::where('brand_name',$brand)
 					->where('status','ACTIVE')->first();
                 if(empty($brandDetails)){
-                    array_push($errors, 'brand '.$brand.' not found!');
+                    Brand::firstOrCreate([
+                        'brand_name' => $brand,
+                        'status' => 'ACTIVE',
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
+                    // array_push($errors, 'brand '.$brand.' not found!');
                 }
             }
-
-			// foreach ($categories as $category) {
-			// 	$categoryDetails = ItemCategory::where('category_name',$category)
-			// 		->where('status','ACTIVE')->first();
-            //     if(empty($categoryDetails)){
-            //         array_push($errors, 'category '.$category.' not found!');
-            //     }
-			// }
 
 			foreach ($colors as $color) {
                 $colorDetails = Color::where('color_name',$color)
 					->where('status','ACTIVE')->first();
                 if(empty($colorDetails)){
-                    array_push($errors, 'color '.$color.' not found!');
+                    // array_push($errors, 'color '.$color.' not found!');
 					Color::firstOrCreate([
 						'color_name' => $color,
-						'status' => 'ACTIVE'
+						'status' => 'ACTIVE',
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
 					]);
                 }
             }
@@ -653,10 +653,12 @@
                 $sizeDetails = Size::where('size',$size)
 					->where('status','ACTIVE')->first();
                 if(empty($sizeDetails)){
-                    array_push($errors, 'size '.$size.' not found!');
+                    // array_push($errors, 'size '.$size.' not found!');
 					Size::firstOrCreate([
 						'size' => $size,
-						'status' => 'ACTIVE'
+						'status' => 'ACTIVE',
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
 					]);
                 }
             }
@@ -665,10 +667,12 @@
                 $modelDetails = ItemModel::where('model_name',$model)
 					->where('status','ACTIVE')->first();
                 if(empty($modelDetails)){
-                    array_push($errors, 'model '.$model.' not found!');
+                    // array_push($errors, 'model '.$model.' not found!');
 					ItemModel::firstOrCreate([
 						'model_name' => $model,
-						'status' => 'ACTIVE'
+						'status' => 'ACTIVE',
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
 					]);
                 }
             }
@@ -680,11 +684,13 @@
                 $campaignDetails = Campaign::where('campaigns_name',$campaign)
 					->where('status','ACTIVE')->first();
                 if(empty($campaignDetails)){
-                    array_push($errors, 'campaign '.$campaign.' not found!');
-					// Campaign::firstOrCreate([
-					// 	'campaigns_name' => $campaign,
-					// 	'status' => 'ACTIVE'
-					// ]);
+                    // array_push($errors, 'campaign '.$campaign.' not found!');
+					Campaign::firstOrCreate([
+						'campaigns_name' => $campaign,
+						'status' => 'ACTIVE',
+                        'created_by' => CRUDBooster::myId(),
+                        'created_at' => date('Y-m-d H:i:s')
+					]);
                 }
             }
 

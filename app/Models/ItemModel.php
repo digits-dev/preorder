@@ -15,6 +15,8 @@ class ItemModel extends Model
     protected $fillable = [
         'model_name',
         'status',
+        'created_by',
+        'updated_by'
     ];
 
     public function scopeWithName($query, $model)
