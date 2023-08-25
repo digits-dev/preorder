@@ -4,7 +4,7 @@ return [
     'table' => [
         'digits_code' => 'Digits Code',
         'item_description' => 'Item Description',
-        'qty' => 'Qty',
+        'qty' => 'Reserve Qty',
         'amount' => 'SRP',
         'onhand_qty' => 'Onhand Qty',
         'reservable_qty' => 'Available Qty',
