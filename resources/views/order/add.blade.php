@@ -397,7 +397,7 @@
                 } else {
                     $("#over_qty").val(0);
                 }
-                // $("#amount_" + id).val(Number(price).toFixed(2));
+                $("#amount_" + id).val(Number(price).toFixed(2));
                 getTotalComputations();
             });
 
@@ -758,14 +758,14 @@
                             var q = $('#qty_' + e.item_code).val();
                             var r = $("#qty_" + e.item_code).attr("data-rate");
 
-                            // $('#amount_' + e.id).val(function(i, amount) {
-                            //     if (q != 0) {
-                            //         var itemPrice = (q * r);
-                            //         return itemPrice;
-                            //     } else {
-                            //         return 0;
-                            //     }
-                            // });
+                            $('#amount_' + e.id).val(function(i, amount) {
+                                if (q != 0) {
+                                    var itemPrice = (q * r);
+                                    return itemPrice;
+                                } else {
+                                    return 0;
+                                }
+                            });
 
                             getTotalComputations();
                         }
