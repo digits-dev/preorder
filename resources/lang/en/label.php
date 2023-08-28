@@ -5,7 +5,7 @@ return [
         'digits_code' => 'Digits Code',
         'item_description' => 'Item Description',
         'qty' => 'Reserve Qty',
-        'amount' => 'Total SRP',
+        'amount' => 'SRP per Unit',
         'onhand_qty' => 'Onhand Qty',
         'reservable_qty' => 'Available Qty',
         'total_quantity' => 'Total Qty',
