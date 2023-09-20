@@ -283,12 +283,9 @@ label.error{
             @if(g('return_url'))
                 <a href="{{ g("return_url") }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
-                <button class="btn btn-danger pull-right" type="button" id="btnDiscount" style="margin-right: 5px; display:none;"> <i class="fa fa-money" ></i> Discount</button>
             @else
                 <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
-
                 <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
-                <button class="btn btn-danger pull-right" type="button" id="btnDiscount" style="margin-right: 5px; display:none;"> <i class="fa fa-money" ></i> Discount</button>
             @endif
         </div>
         </form>
@@ -309,7 +306,6 @@ label.error{
 var token = $("#token").val();
 var stack = [];
 var orderLimit = false;
-var hasDiscounted = false; //2023-02-22
 var selectedModel = [];
 
 $(document).ready(function() {
@@ -692,16 +688,6 @@ $(document).ready(function() {
        if(e.keyCode == 13) { e.preventDefault(); }
     });
 
-    $("#btnDiscount").click(function(event) {
-        let tAmount = $("#total_Amount").val();
-        let tDicount = tAmount-2000;
-        $("#totalAmount").val(currencyFormat(tDicount));
-        $("#total_Amount").val(tDicount);
-        hasDiscounted = true;
-        Swal.fire('Info!','An amount of P2000 has been deducted to total amount!','success');
-        $("#btnDiscount").attr("disabled","disabled");
-    });
-
     $("#btnSubmit").click(function(event) {
         event.preventDefault();
         let rowCount = parseInt($('#order-items tr.nr').length);
@@ -727,11 +713,6 @@ $(document).ready(function() {
 
         if(rowCount == 0){
             Swal.fire('Warning!','Please add at least 1 item!','warning');
-            return false;
-        }
-
-        if(rowCount >= 2 && !hasDiscounted){
-            Swal.fire('Warning!','Please click discount!','warning');
             return false;
         }
 
@@ -807,10 +788,6 @@ function resetDropDownV2() { //2023-02-22
     $('#size').empty().append('<option selected="selected" value="">Please select a size</option>');
 
     let rowCount = parseInt($('#order-items tr.nr').length);
-
-    if(rowCount >= 2){
-        $("#btnDiscount").css("display","block");
-    }
 }
 
 function validateEmail(email) {
@@ -910,7 +887,7 @@ function calculateFreeBiesTotalAmount(item_code) {
         }
     });
 
-    return freeBiesTotalAmount.toFixed(2);
+    return Number(freeBiesTotalAmount).toFixed(2);
 }
 
 function checkQty() {
@@ -974,7 +951,7 @@ function updateFreebiesReservableQty(){
 }
 
 function currencyFormat(num) {
-  return 'P ' + num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+  return 'P ' + Number(num).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 }
 
 </script>
