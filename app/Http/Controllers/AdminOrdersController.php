@@ -23,6 +23,7 @@
 		private const ORDER_CANCELLED = 2;
 		private const ORDER_PAID = 3;
 		private const ORDER_CLAIMED = 2;
+        private const ORDER_PARTIAL_CLAIMED = 3;
 
 	    public function cbInit() {
 
@@ -460,6 +461,19 @@
             return view('order.detail',$data);
 		}
 
+        public function getPrint($id)
+		{
+			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_detail==FALSE) {
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+            $data = [];
+            $data['page_title'] = 'Pre-Order Details';
+			$data['order_details'] = Order::withDetails($id);
+			$data['order_items'] = OrderLine::withDetails($id);
+            return view('order.print',$data);
+		}
+
 		public function getEdit($id)
 		{
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {
@@ -557,10 +571,11 @@
 			CRUDBooster::insertLog(cbLang("log_add", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 
 			// CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success')->send();
-			return redirect(CRUDBooster::mainpath())->with([
-				'message' => 'Order reserved!',
-				'message_type' => 'success'
-			])->send();
+            return self::getPrint($order->id);
+			// return redirect(CRUDBooster::mainpath())->with([
+			// 	'message' => 'Order reserved!',
+			// 	'message_type' => 'success'
+			// ])->send();
 
 		}
 
@@ -613,13 +628,33 @@
 				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrors($validator)->withInput();
 			}
 			$order = Order::find($request->order_id);
-			if($request->claimed_date){
 
-				$order->claim_statuses_id = self::ORDER_CLAIMED;
-				$order->claimed_date = $request->claimed_date;
-				$order->claiming_invoice_number = $request->claiming_invoice_number;
-				$order->save();
-			}
+			// if($request->claimed_date){
+
+			// 	$order->claim_statuses_id = self::ORDER_CLAIMED;
+			// 	$order->claimed_date = $request->claimed_date;
+			// 	$order->claiming_invoice_number = $request->claiming_invoice_number;
+			// 	$order->save();
+			// }
+            if(count($request->claimed) == count($request->claimed_date)){
+                $order->claim_statuses_id = self::ORDER_CLAIMED;
+                $order->save();
+            }
+            elseif(count($request->claimed) < count($request->claimed_date)){
+                $order->claim_statuses_id = self::ORDER_PARTIAL_CLAIMED;
+                $order->save();
+            }
+            if(!empty($request->claimed)){
+
+                foreach ($request->claimed as $keyItem => $valueItem) {
+                    $orderLines = OrderLine::where('orders_id',$request->order_id)
+                        ->where('digits_code',$keyItem)->first();
+
+                    $orderLines->claimed_date = $request->claimed_date[$keyItem];
+                    $orderLines->claiming_invoice_number = $request->claiming_invoice_number[$keyItem];
+                    $orderLines->save();
+                }
+            }
 			if($request->invoice_number){
 
 				$order->payment_statuses_id = self::ORDER_PAID;

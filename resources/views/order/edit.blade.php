@@ -92,7 +92,7 @@ table.table.table-bordered th {
                                     {{ $order_details->contact_number }}
                                 </td>
                             </tr>
-                            <tr>
+                            {{-- <tr>
                                 <td style="width: 25%">
                                     <b>Claiming Invoice#:</b>
                                 </td>
@@ -104,9 +104,9 @@ table.table.table-bordered th {
                                 </td>
                                 <td>
                                     <input class="form-control" type="text" style="width:100%" placeholder="INV#" name="claiming_invoice_number" id="claiming_invoice_number" value="{{ (old('claiming_invoice_number')) ?  old('claiming_invoice_number') : $order_details->claiming_invoice_number }}" >
-                                    
+
                                 </td>
-                            </tr>
+                            </tr> --}}
 
                         </tbody>
                     </table>
@@ -151,7 +151,7 @@ table.table.table-bordered th {
                                 </td>
                                 <td colspan="2">
                                     <input class="form-control" type="text" style="width:100%" placeholder="INV#" name="invoice_number" id="invoice_number" value="{{ (old('invoice_number')) ?  old('invoice_number') : $order_details->invoice_number }}" >
-                                    
+
                                 </td>
                             </tr>
                         </tbody>
@@ -171,27 +171,48 @@ table.table.table-bordered th {
                         <table class="table table-bordered noselect" id="dr-items">
                             <thead>
                                 <tr style="background: #0047ab; color: white">
+                                    <th width="5%" class="text-center">Claimed?</th>
                                     <th width="10%" class="text-center">{{ trans('label.table.digits_code') }}</th>
-                                    <th width="25%" class="text-center">{{ trans('label.table.item_description') }}</th>
+                                    <th width="35%" class="text-center">{{ trans('label.table.item_description') }}</th>
                                     <th width="10%" class="text-center">{{ trans('label.table.qty') }}</th>
                                     <th width="10%" class="text-center">{{ trans('label.table.amount') }}</th>
+                                    <th width="15%" class="text-center">Claimed Date</th>
+                                    <th width="10%" class="text-center">Claiming Invoice #</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($order_items as $item)
+                                @foreach ($order_items as $key => $item)
                                     <tr>
+                                        <td class="text-center">
+                                            @if(empty($item['claimed_date']))
+                                                <input type="checkbox" title="Claim Item # {{ $item['digits_code'] }}" class="claimed-item" name="claimed[{{$item['digits_code']}}]" data-item="{{$item['digits_code']}}" id="claimed-{{$item['digits_code']}}" >
+                                            @else
+                                            <input type="checkbox" title="Claim Item # {{ $item['digits_code'] }}" class="checked-claimed-item" name="claimed[{{$item['digits_code']}}]" data-item="{{$item['digits_code']}}" id="claimed-{{$item['digits_code']}}" checked readonly>
+                                            @endif
+
+                                        </td>
                                         <td class="text-center">{{$item['digits_code']}} </td>
                                         <td>{{$item['item_description']}}</td>
                                         <td class="text-center">{{$item['qty']}}</td>
                                         <td class="text-center">{{ number_format($item['amount'],2,".",",") }}</td>
+                                        <td>
+                                            <div class="input-group date">
+                                                <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                                <input class="form-control claimed_date" type="text" name="claimed_date[{{$item['digits_code']}}]" id="claimed_date{{$item['digits_code']}}" value="{{ $item['claimed_date'] }}" readonly>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input class="form-control" type="text" style="width:100%" placeholder="INV#" name="claiming_invoice_number[{{$item['digits_code']}}]" id="claiming_invoice_number{{$item['digits_code']}}" value="{{ $item['claiming_invoice_number'] }}" readonly>
+
+                                        </td>
                                     </tr>
                                 @endforeach
 
                                 <tr class="tableInfo">
-                                    <td colspan="2" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
+                                    <td colspan="3" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
                                     <td align="center" colspan="1">{{$order_details->total_qty}}</td>
                                     <td align="center" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
-                                    
+                                    <td colspan="2"></td>
                                 </tr>
 
                             </tbody>
@@ -228,27 +249,43 @@ $(document).ready(function() {
 
     $(function(){
         $('body').addClass("sidebar-collapse");
+        $(".claimed_date").css('pointer-events', 'none');
+        $(".checked-claimed-item").css('pointer-events', 'none');
     });
 
-    $('#claimed_date').datepicker({
+    $('.claimed_date').datepicker({
         autoclose: true,
         todayHighlight: true,
         minDate: 0,
         dateFormat: 'yy-mm-dd'
     });
 
-    if($("#order_payment").val() == "PAID"){
-        $("#claimed_date").datepicker().datepicker("setDate", new Date());
-        $("#claimed_date").prop("required",true);
-        $("#claiming_invoice_number").prop("required",true);
-    }
-    else if($("#order_payment").val() == "RESERVED"){
-        $("#claimed_date").datepicker("disable");
-        $("#claiming_invoice_number").prop("disabled","disabled");
-    }
+    // if($("#order_payment").val() == "PAID"){
+    //     $(".claimed_date").datepicker().datepicker("setDate", new Date());
+    //     $(".claimed_date").prop("required",true);
+    //     $("#claiming_invoice_number").prop("required",true);
+    // }
+    // else if($("#order_payment").val() == "RESERVED"){
+    //     $(".claimed_date").datepicker("disable");
+    //     $("#claiming_invoice_number").prop("disabled","disabled");
+    // }
 
     $('#btnSubmit').bind('keypress keydown keyup', function(e){
        if(e.keyCode == 13) { e.preventDefault(); }
+    });
+
+    $(".claimed-item").click(function(){
+        let claimed_item = $(this).attr('data-item');
+        if($(this).is(":checked")){
+            $("#claiming_invoice_number"+claimed_item).prop('readonly',false);
+            $("#claiming_invoice_number"+claimed_item).prop('required',true);
+            $("#claimed_date"+claimed_item).val($.datepicker.formatDate('yy-mm-dd', new Date()));
+        }
+        else{
+            $("#claiming_invoice_number"+claimed_item).val('');
+            $("#claimed_date"+claimed_item).val('');
+            $("#claiming_invoice_number"+claimed_item).prop('readonly',true);
+        }
     });
 
     $("#btnSubmit").click(function(event) {
