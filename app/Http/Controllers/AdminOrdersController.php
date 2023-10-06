@@ -636,16 +636,10 @@
 			// 	$order->claiming_invoice_number = $request->claiming_invoice_number;
 			// 	$order->save();
 			// }
-            if(count($request->claimed) == count($request->claimed_date)){
-                $order->claim_statuses_id = self::ORDER_CLAIMED;
-                $order->save();
-            }
-            elseif(count($request->claimed) < count($request->claimed_date)){
-                $order->claim_statuses_id = self::ORDER_PARTIAL_CLAIMED;
-                $order->save();
-            }
-            if(!empty($request->claimed)){
 
+            if(!empty($request->claimed)){
+				$order->claim_statuses_id = (count($request->claimed) == count($request->claimed_date)) ? self::ORDER_CLAIMED : self::ORDER_PARTIAL_CLAIMED;
+                $order->save();
                 foreach ($request->claimed as $keyItem => $valueItem) {
                     $orderLines = OrderLine::where('orders_id',$request->order_id)
                         ->where('digits_code',$keyItem)->first();
