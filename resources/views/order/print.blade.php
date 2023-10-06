@@ -158,9 +158,11 @@ table.table.table-bordered th {
                             <thead>
                                 <tr style="background: #0047ab; color: white">
                                     <th width="10%" class="text-center">{{ trans('label.table.digits_code') }}</th>
-                                    <th width="25%" class="text-center">{{ trans('label.table.item_description') }}</th>
+                                    <th width="35%" class="text-center">{{ trans('label.table.item_description') }}</th>
                                     <th width="10%" class="text-center">{{ trans('label.table.qty') }}</th>
                                     <th width="10%" class="text-center">{{ trans('label.table.amount') }}</th>
+                                    <th width="15%" class="text-center">Claimed Date</th>
+                                    <th width="10%" class="text-center">Claiming Invoice #</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,6 +172,8 @@ table.table.table-bordered th {
                                         <td>{{$item['item_description']}}</td>
                                         <td class="text-center">{{$item['qty']}}</td>
                                         <td class="text-center">{{ number_format($item['amount'],2,".",",") }}</td>
+                                        <td>{{$item['claimed_date']}}</td>
+                                        <td>{{$item['claiming_invoice_number']}}</td>
                                     </tr>
                                 @endforeach
 
@@ -177,7 +181,7 @@ table.table.table-bordered th {
                                     <td colspan="2" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
                                     <td align="center" colspan="1">{{$order_details->total_qty}}</td>
                                     <td align="center" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
-
+                                    <td colspan="2"></td>
                                 </tr>
 
                             </tbody>
