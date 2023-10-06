@@ -24,16 +24,20 @@ table.table.table-bordered th {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
-
+@media print {
+    .no-print{
+        display: none;
+    }
+}
 
 </style>
 @endpush
 
     @if(g('return_url'))
-        <p><a title='Return' href='{{g("return_url")}}' class="noprint"><i class='fa fa-chevron-circle-left'></i>
+        <p><a title='Return' href='{{g("return_url")}}' class="no-print"><i class='fa fa-chevron-circle-left'></i>
         &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>
     @else
-        <p><a title='Main Module' href='{{CRUDBooster::mainpath()}}' class="noprint"><i class='fa fa-chevron-circle-left'></i>
+        <p><a title='Main Module' href='{{CRUDBooster::mainpath()}}' class="no-print"><i class='fa fa-chevron-circle-left'></i>
         &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>
     @endif
 
@@ -189,9 +193,9 @@ table.table.table-bordered th {
 
         <div class='panel-footer'>
             @if(g('return_url'))
-            <a href="{{ g("return_url") }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
+            <a href="{{ g("return_url") }}" class="btn btn-default no-print">{{ trans('label.form.back') }}</a>
             @else
-            <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
+            <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default no-print">{{ trans('label.form.back') }}</a>
             @endif
         </div>
     </div>
