@@ -42,6 +42,7 @@ class Order extends Model
         return $query->where('orders.id',$id)
         ->leftJoin('channels','orders.channels_id','=','channels.id')
         ->leftJoin('stores','orders.stores_id','=','stores.id')
+        ->leftJoin('concepts','stores.concepts_id','=','concepts.id')
         ->leftJoin('customers','orders.customers_id','=','customers.id')
         ->leftJoin('payment_methods','orders.payment_methods_id','=','payment_methods.id')
         ->leftJoin('payment_statuses','orders.payment_statuses_id','=','payment_statuses.id')
@@ -51,6 +52,7 @@ class Order extends Model
             'orders.*',
             'channels.channel_name',
             'stores.store_name',
+            'concepts.concept_logo',
             'customers.customer_name',
             'customers.email_address',
             'customers.contact_number',

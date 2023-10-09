@@ -43,7 +43,16 @@ table.table.table-bordered th {
 
     <div class='panel panel-default'>
         <div class='panel-heading'>
-        <h3 class="box-title text-center"><b>Pre-Order Details</b></h3>
+            <div style="font-size:30px; font-weight:bold; display: inline;" class="col-md-8">Pre-Order Details</div>
+
+            <div class="col-md-4 img-logo" style="display: inline;">
+                <a href="#" style="vertical-align: top;">
+                <img src="{{ asset($order_details->concept_logo) }}" id="store-logo" class="img-responsive pull-right" alt="Preorder" width="170" height="70">
+                </a>
+            </div>
+
+            <div style="clear:both;"></div>
+
         </div>
 
         <div class='panel-body' id="order-details">
