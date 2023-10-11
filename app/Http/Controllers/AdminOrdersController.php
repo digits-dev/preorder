@@ -30,7 +30,7 @@
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
 			$this->title_field = "reference";
 			$this->limit = "20";
-			$this->orderby = "reference,asc";
+			$this->orderby = "reference,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
