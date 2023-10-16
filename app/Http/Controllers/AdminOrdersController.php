@@ -336,7 +336,7 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	        if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands"])){
+	        if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands","Accounting"])){
 				$query->where('orders.stores_id',CRUDBooster::myStore());
 			}
 	    }
