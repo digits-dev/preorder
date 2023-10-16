@@ -84,7 +84,7 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
 
         $orders->whereNull('orders.deleted_at');
 
-        if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands"])){
+        if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands","Accounting"])){
             $orders->where('orders.stores_id',CRUDBooster::myStore());
         }
         if (request()->has('filter_column')) {
