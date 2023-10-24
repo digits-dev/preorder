@@ -31,6 +31,7 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
             'Invoice #',
             'Claim Status',
             'Claimed Date',
+            'Claiming Invoice #'
         ];
     }
 
@@ -51,7 +52,8 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
             $order->payment_status,
             $order->invoice_number,
             $order->claim_status,
-            $order->claimed_date,
+            (empty($order->claimed_date)) ? $order->claim_date : $order->claimed_date,
+            (empty($order->claiming_invoice_number)) ? $order->claim_invoice_number : $order->claiming_invoice_number,
         ];
     }
 
@@ -79,6 +81,8 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
                 'order_lines.amount',
                 'order_lines.qty',
                 'claim_statuses.status_name as claim_status',
+                'order_lines.claiming_invoice_number as claim_invoice_number',
+                'order_lines.claimed_date as claim_date',
                 'payment_statuses.status_name as payment_status',
                 'payment_methods.payment_method');
 
