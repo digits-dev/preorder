@@ -282,11 +282,10 @@ label.error{
         <div class='panel-footer'>
             @if(g('return_url'))
                 <a href="{{ g("return_url") }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
-                <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
             @else
                 <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('label.form.back') }}</a>
-                <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
             @endif
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('label.form.save') }}</button>
         </div>
         </form>
     </div>

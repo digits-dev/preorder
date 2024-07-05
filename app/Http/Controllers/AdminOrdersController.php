@@ -498,7 +498,7 @@
             }
 
 			$validator = Validator::make($request->all(), [
-                'customer_name' => 'required|alpha_spaces',
+                'customer_name' => 'required',
 				'email_address' => 'required|email',
 				'contact_number' => 'required|numeric|digits:11',
 				'digits_code' => 'required',
@@ -506,7 +506,10 @@
             ]);
 
 			if ($validator->fails()) {
-				return redirect(CRUDBooster::mainpath('add'))->withErrors($validator)->withInput();
+				return redirect(CRUDBooster::mainpath('add'))->with([
+                    'message_type'=>'danger',
+                    'message'=> implode(",", $validator->errors()->all())
+                ])->withInput();
 			}
 
 			if ($request->over_qty == 1) {
@@ -625,7 +628,10 @@
             ]);
 
 			if ($validator->fails()) {
-				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->withErrors($validator)->withInput();
+				return redirect(CRUDBooster::mainpath('edit/'.$request->order_id))->with([
+                    'message_type'=>'danger',
+                    'message'=> implode(",", $validator->errors()->all())
+                ])->withInput();
 			}
 			$order = Order::find($request->order_id);
 
