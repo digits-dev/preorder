@@ -15,22 +15,7 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
     use Exportable;
 
     public function headings():array{
-        return [
-            'Digits Code',
-            'UPC Code',
-            'Item Description',
-            'Brand',
-            // 'Category',
-            'Model',
-            'Size',
-            'Actual Color',
-            'Current SRP',
-            'Campaign',
-            'Included Freebie',
-            'Item Type',
-            'Freebie Category',
-            'Available Qty'
-        ];
+        return config('excel-template.item-export');
     }
 
     public function map($item): array {
@@ -42,12 +27,12 @@ class ItemExport implements FromQuery, WithHeadings, WithMapping
             // $item->category_name,
             $item->brand_name,
             $item->model_name,
-            $item->size,
             $item->color_name,
+            $item->size,
             $item->current_srp,
             $item->campaigns_name,
-            rtrim(FreebiesCategory::withCategory($item->included_freebies),","),
             ($item->is_freebies == 0) ? 'MAIN ITEM' : 'FREEBIE',
+            rtrim(FreebiesCategory::withCategory($item->included_freebies),","),
             $item->freebie_category_name,
             $item->dtc_reserved_qty,
         ];
