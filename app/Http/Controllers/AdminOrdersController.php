@@ -2,11 +2,10 @@
 
     namespace App\Http\Controllers;
 
-	use Session;
 	use Illuminate\Http\Request;
-	use CRUDBooster;
 	use App\Exports\OrderExport;
-	use App\Models\Campaign;
+use App\Http\Helpers\Helper;
+use App\Models\Campaign;
 	use App\Models\Channel;
 	use App\Models\Customer;
 	use App\Models\Item;
@@ -15,7 +14,9 @@
 	use App\Models\OrderLine;
 	use App\Models\PaymentMethod;
 	use App\Models\Store;
-	use Illuminate\Support\Facades\Validator;
+    use crocodicstudio\crudbooster\helpers\CRUDBooster;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 	use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminOrdersController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -106,7 +107,7 @@
 
 	        $this->table_row_color = array();
 
-	        $this->script_js = NULL;
+	        $this->script_js = null;
 			$this->script_js = "
 				function showOrderExport() {
 					$('#modal-order-export').modal('show');
@@ -143,7 +144,7 @@
 			</div>
 			";
 
-	        $this->style_css = NULL;
+	        $this->style_css = null;
 	        $this->style_css = "
 			@media only screen and (max-width: 600px) {
 				a {
@@ -174,13 +175,13 @@
 	    public function hook_query_index(&$query) {
 	        //Your code here
 	        if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands","Accounting"])){
-				$query->where('orders.stores_id',CRUDBooster::myStore());
+				$query->where('orders.stores_id', Helper::myStore());
 			}
 	    }
 
 		public function getAdd()
 		{
-			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE || $this->button_add==FALSE) {
+			if(!CRUDBooster::isCreate() && !$this->global_privilege || !$this->button_add) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -194,7 +195,7 @@
 					->where('id',CRUDBooster::myChannel())
 					->get();
 				$data['stores'] = Store::where('status','ACTIVE')
-					->where('id',CRUDBooster::myStore())
+					->where('id', Helper::myStore())
 					->get();
 			}
 			$data['paymentMethods'] = PaymentMethod::where('status','ACTIVE')->get();
@@ -204,7 +205,7 @@
 
 		public function getDetail($id)
 		{
-			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_detail==FALSE) {
+			if(!CRUDBooster::isRead() && !$this->global_privilege || !$this->button_detail) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -217,7 +218,7 @@
 
         public function getPrint($id)
 		{
-			if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_detail==FALSE) {
+			if(!CRUDBooster::isRead() && !$this->global_privilege || !$this->button_detail) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -230,7 +231,7 @@
 
 		public function getEdit($id)
 		{
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {
+			if(!CRUDBooster::isUpdate() && !$this->global_privilege) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -248,7 +249,7 @@
 				return view('crudbooster::login');
 			}
 
-			if(!CRUDBooster::isCreate() && $this->global_privilege==FALSE) {
+			if(!CRUDBooster::isCreate() && !$this->global_privilege) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -346,7 +347,7 @@
 				return view('crudbooster::login');
 			}
 
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {
+			if(!CRUDBooster::isUpdate() && !$this->global_privilege) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
@@ -376,7 +377,7 @@
 				return view('crudbooster::login');
 			}
 
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {
+			if(!CRUDBooster::isUpdate() && !$this->global_privilege) {
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 

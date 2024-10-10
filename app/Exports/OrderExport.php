@@ -2,12 +2,13 @@
 
 namespace App\Exports;
 
+use App\Http\Helpers\Helper;
 use App\Models\Order;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use CRUDBooster;
 
 class OrderExport implements FromQuery, WithHeadings, WithMapping
 {
@@ -59,37 +60,10 @@ class OrderExport implements FromQuery, WithHeadings, WithMapping
 
     public function query()
     {
-        $orders = Order::query()
-            ->leftJoin('campaigns','orders.campaigns_id','=','campaigns.id')
-            ->leftJoin('channels','orders.channels_id','=','channels.id')
-            ->leftJoin('stores','orders.stores_id','=','stores.id')
-            ->leftJoin('customers','orders.customers_id','=','customers.id')
-            ->leftJoin('payment_methods','orders.payment_methods_id','=','payment_methods.id')
-            ->leftJoin('payment_statuses','orders.payment_statuses_id','=','payment_statuses.id')
-            ->leftJoin('claim_statuses','orders.claim_statuses_id','=','claim_statuses.id')
-            ->join('order_lines','orders.id','=','order_lines.orders_id')
-            ->join('items','order_lines.digits_code','=','items.digits_code')
-            ->select(
-                'orders.*',
-                'channels.channel_name',
-                'stores.store_name',
-                'customers.customer_name',
-                'customers.email_address',
-                'customers.contact_number',
-                'order_lines.digits_code',
-                'items.item_description',
-                'order_lines.amount',
-                'order_lines.qty',
-                'claim_statuses.status_name as claim_status',
-                'order_lines.claiming_invoice_number as claim_invoice_number',
-                'order_lines.claimed_date as claim_date',
-                'payment_statuses.status_name as payment_status',
-                'payment_methods.payment_method');
-
-        $orders->whereNull('orders.deleted_at');
+        $orders = Order::query()->getExport();
 
         if(!CRUDBooster::isSuperAdmin() && !in_array(CRUDBooster::myPrivilegeName(),["Ops","Brands","Accounting"])){
-            $orders->where('orders.stores_id',CRUDBooster::myStore());
+            $orders->where('orders.stores_id', Helper::myStore());
         }
         if (request()->has('filter_column')) {
             $filter_column = request()->filter_column;
