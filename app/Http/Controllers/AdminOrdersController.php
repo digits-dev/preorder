@@ -192,7 +192,7 @@ use Illuminate\Support\Facades\Validator;
 			$data['stores'] = Store::where('status','ACTIVE')->get();
 			if(!CRUDBooster::isSuperAdmin()){
 				$data['channels'] = Channel::where('status','ACTIVE')
-					->where('id',CRUDBooster::myChannel())
+					->where('id', Helper::myChannel())
 					->get();
 				$data['stores'] = Store::where('status','ACTIVE')
 					->where('id', Helper::myStore())
