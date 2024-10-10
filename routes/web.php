@@ -21,7 +21,15 @@ Route::get('/', function () {
     return redirect('admin/login');
 });
 
-Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PATH'), 'namespace' => 'App\Http\Controllers'], function(){
+Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CBBackend'],'prefix' => config('crudbooster.ADMIN_PATH')], function(){
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('change-password',[AdminCmsUsersController::class,'showChangePasswordForm'])->name('show-change-password');
+        Route::post('change-password',[AdminCmsUsersController::class,'changePassword'])->name('change-password');
+        Route::post('waive-change-password',[AdminCmsUsersController::class,'waiveChangePassword'])->name('waive-change-password');
+    });
+});
+
+Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CBBackend'], 'prefix' => config('crudbooster.ADMIN_PATH'), 'namespace' => 'App\Http\Controllers'], function(){
 
     Route::group(['prefix' => 'items'], function () {
         Route::post('inventory-upload',[AdminItemsController::class, 'inventoryUpload'])->name('item-inventory.upload');
