@@ -5,15 +5,15 @@
 <style type="text/css">
 
 table.table.table-bordered td {
-  border: 1px solid black;
+  border: 1px solid black !important;
 }
 
 table.table.table-bordered tr {
-  border: 1px solid black;
+  border: 1px solid black !important;
 }
 
 table.table.table-bordered th {
-  border: 1px solid black;
+  border: 1px solid black !important;
 }
 
 .noselect {
@@ -24,9 +24,79 @@ table.table.table-bordered th {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
+ /* General print settings */
 @media print {
-    .no-print{
+
+
+    /* Hide any elements you don't want to print (e.g., buttons, headers) */
+    button, .no-print {
         display: none;
+    }
+
+    /* Optional: If you want to print in a specific format (A4 for example) */
+    @page {
+        size: A4;
+        margin: 20mm;
+    }
+
+    /* Make the table and layout elements look good on print */
+    body {
+        font-family: Arial, sans-serif;
+        color: #000;
+        font-size: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: pre-wrap;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f0f0f0;
+    }
+
+    /* Optional: Prevent page breaks inside tables */
+    table, tr, td {
+        page-break-inside: avoid;
+    }
+
+    /* Style labels (e.g. Customer Name) and their content */
+    .label {
+        font-weight: bold;
+    }
+
+    /* Ensure content fits within the page and remove any extra padding/margins */
+    .order-details {
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Set the header to be prominent and aligned properly */
+    h1, h2 {
+        text-align: center;
+        margin-top: 0;
+    }
+
+    /* Styling specific sections (like the Order Items table) */
+    .order-items {
+        margin-top: 10px;
+    }
+
+    .order-items th {
+        background-color: #007bff;
+        color: white;
+    }
+
+    img {
+        width: 10%;
+        height: auto;
     }
 }
 
@@ -44,10 +114,10 @@ table.table.table-bordered th {
 
     <div class='panel panel-default'>
         <div class='panel-heading'>
-            <div style="font-size:30px; font-weight:bold; display: inline;" class="col-md-8">Pre-Order Details</div>
+            <div style="font-size:25px; font-weight:bold; display: inline;" class="col-md-8">Pre-Order Details</div>
 
             <div class="col-md-4 img-logo" style="display: inline;">
-                <a href="#" style="vertical-align: top;">
+                <a href="#" style="vertical-align: top; ">
                 <img src="{{ asset($order_details->concept_logo) }}" id="store-logo" class="img-responsive pull-right" alt="Preorder" width="170" height="70">
                 </a>
             </div>
@@ -58,7 +128,7 @@ table.table.table-bordered th {
 
         <div class='panel-body' id="order-details">
 
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6 col-sm-6 order-details">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="order-details-1">
                         <tbody>
@@ -71,7 +141,7 @@ table.table.table-bordered th {
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Customer Email:</b>
                                 </td>
                                 <td colspan="3">
@@ -80,7 +150,7 @@ table.table.table-bordered th {
                             </tr>
 
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Customer Contact #:</b>
                                 </td>
                                 <td colspan="3">
@@ -88,7 +158,7 @@ table.table.table-bordered th {
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Claim Status:</b>
                                 </td>
                                 <td width: 25%>
@@ -107,12 +177,12 @@ table.table.table-bordered th {
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 col-xs-6 col-sm-6 order-details">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="order-details-2">
                         <tbody>
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Order Ref#:</b>
                                 </td>
                                 <td>
@@ -122,7 +192,7 @@ table.table.table-bordered th {
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Store:</b>
                                 </td>
                                 <td colspan="2">
@@ -131,7 +201,7 @@ table.table.table-bordered th {
                             </tr>
 
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Mode of Payment:</b>
                                 </td>
                                 <td colspan="2">
@@ -139,7 +209,7 @@ table.table.table-bordered th {
                                 </td>
                             </tr>
                             <tr>
-                                <td style="width: 25%">
+                                <td style="width: 35%">
                                     <b>Payment Status:</b>
                                 </td>
                                 <td>
@@ -156,7 +226,7 @@ table.table.table-bordered th {
 
             <br>
 
-            <div class="col-md-12">
+            <div class="col-md-12 col-xs-12 col-sm-12 order-items">
                 <div class="box-header text-center">
                     <h3 class="box-title"><b>Order Items</b></h3>
                 </div>
@@ -166,12 +236,12 @@ table.table.table-bordered th {
                         <table class="table table-bordered" id="order-items">
                             <thead>
                                 <tr style="background: #0047ab; color: white">
-                                    <th width="10%" class="text-center">{{ trans('label.table.digits_code') }}</th>
-                                    <th width="35%" class="text-center">{{ trans('label.table.item_description') }}</th>
-                                    <th width="10%" class="text-center">{{ trans('label.table.qty') }}</th>
-                                    <th width="10%" class="text-center">{{ trans('label.table.amount') }}</th>
-                                    <th width="15%" class="text-center">Claimed Date</th>
-                                    <th width="10%" class="text-center">Claiming Invoice #</th>
+                                    <th style="width: 10%;" class="text-center">{{ trans('label.table.digits_code') }}</th>
+                                    <th style="width: 35%;" class="text-center">{{ trans('label.table.item_description') }}</th>
+                                    <th style="width: 10%;" class="text-center">{{ trans('label.table.qty') }}</th>
+                                    <th style="width: 10%;" class="text-center">{{ trans('label.table.amount') }}</th>
+                                    <th style="width: 15%;" class="text-center">Claimed Date</th>
+                                    <th style="width: 10%;" class="text-center">Claiming Invoice #</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -187,9 +257,9 @@ table.table.table-bordered th {
                                 @endforeach
 
                                 <tr class="tableInfo">
-                                    <td colspan="2" align="right"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
-                                    <td align="center" colspan="1">{{$order_details->total_qty}}</td>
-                                    <td align="center" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
+                                    <td colspan="2" style="text-align: right;"><strong>{{ trans('label.table.total_quantity') }}</strong></td>
+                                    <td style="text-align: center;" colspan="1">{{$order_details->total_qty}}</td>
+                                    <td style="text-align: center;" colspan="1">P {{ number_format($order_details->total_amount,2,".",",") }}</td>
                                     <td colspan="2"></td>
                                 </tr>
 

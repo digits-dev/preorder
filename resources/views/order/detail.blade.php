@@ -2,6 +2,7 @@
 @section('content')
 
 @push('head')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style type="text/css">
 
 table.table.table-bordered td {
@@ -211,12 +212,26 @@ table.table.table-bordered th {
 
 @endsection
 @push('bottom')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 
     $(function(){
         $('body').addClass("sidebar-collapse");
     });
+
+    $(document).keydown(function(e) {
+    // Check if Ctrl (or Command for Mac) is pressed along with 'P'
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault(); // Prevent the default print action
+        Swal.fire({
+            icon: 'info',
+            title: 'Print Disabled',
+            text: 'Printing is disabled on this page!',
+            confirmButtonText: 'OK'
+        });
+    }
+});
 
 });
 </script>
