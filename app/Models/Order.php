@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use CRUDBooster;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +14,9 @@ class Order extends Model
 
     protected $fillable = [
         'order_date',
+        'paid_at',
+        'cancelled_at',
+        'cancelled_by',
         'reference',
         'campaigns_id',
         'invoice_number',

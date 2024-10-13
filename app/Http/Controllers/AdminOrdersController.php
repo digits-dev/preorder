@@ -4,8 +4,8 @@
 
 	use Illuminate\Http\Request;
 	use App\Exports\OrderExport;
-use App\Http\Helpers\Helper;
-use App\Models\Campaign;
+    use App\Http\Helpers\Helper;
+    use App\Models\Campaign;
 	use App\Models\Channel;
 	use App\Models\Customer;
 	use App\Models\Item;
@@ -15,8 +15,8 @@ use App\Models\Campaign;
 	use App\Models\PaymentMethod;
 	use App\Models\Store;
     use crocodicstudio\crudbooster\helpers\CRUDBooster;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Validator;
+    use Illuminate\Support\Facades\Session;
+    use Illuminate\Support\Facades\Validator;
 	use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminOrdersController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Validator;
 		private const ORDER_PAID = 3;
 		private const ORDER_CLAIMED = 2;
         private const ORDER_PARTIAL_CLAIMED = 3;
+        private const CLAIMED_CANCELLED = 3;
 
 	    public function cbInit() {
 
@@ -61,6 +62,7 @@ use Illuminate\Support\Facades\Validator;
 			$this->col[] = ["label"=>"Payment Methods","name"=>"payment_methods_id","join"=>"payment_methods,payment_method"];
 			$this->col[] = ["label"=>"Pre-order Invoice #","name"=>"invoice_number"];
 			// $this->col[] = ["label"=>"Order Status","name"=>"order_statuses_id","join"=>"order_statuses,status_style"];
+            $this->col[] = ["label"=>"Payment Date","name"=>"paid_at"];
 			$this->col[] = ["label"=>"Payment Status","name"=>"payment_statuses_id","join"=>"payment_statuses,status_style"];
 			$this->col[] = ["label"=>"Claim Status","name"=>"claim_statuses_id","join"=>"claim_statuses,status_style"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -322,7 +324,7 @@ use Illuminate\Support\Facades\Validator;
 						'digits_code' => $freebies,
 						'qty' => $request->f_qty[$key],
 						'amount' => 0,
-						'available_qty' => $request->f_amount[$key]
+						'available_qty' => $request->f_reservable_qty[$key]
 					]);
 
 					Item::where('digits_code',$freebies)
@@ -357,6 +359,9 @@ use Illuminate\Support\Facades\Validator;
 			Order::where('id',$id)->update([
 				'order_statuses_id' => self::ORDER_CANCELLED,
 				'payment_statuses_id' => self::ORDER_CANCELLED,
+                'cancelled_at' => date('Y-m-d H:i:s'),
+                'cancelled_by' => CRUDBooster::myId(),
+                'claim_statuses_id' => self::CLAIMED_CANCELLED,
 				'updated_by' => CRUDBooster::myId()
 			]);
 
@@ -394,14 +399,6 @@ use Illuminate\Support\Facades\Validator;
 			}
 			$order = Order::find($request->order_id);
 
-			// if($request->claimed_date){
-
-			// 	$order->claim_statuses_id = self::ORDER_CLAIMED;
-			// 	$order->claimed_date = $request->claimed_date;
-			// 	$order->claiming_invoice_number = $request->claiming_invoice_number;
-			// 	$order->save();
-			// }
-
             if(!empty($request->claimed)){
 				$order->claim_statuses_id = (count($request->claimed) == count($request->claimed_date)) ? self::ORDER_CLAIMED : self::ORDER_PARTIAL_CLAIMED;
                 $order->save();
@@ -417,6 +414,7 @@ use Illuminate\Support\Facades\Validator;
 			if($request->invoice_number){
 
 				$order->payment_statuses_id = self::ORDER_PAID;
+                $order->paid_at = date('Y-m-d H:i:s');
 				$order->invoice_number = $request->invoice_number;
 				$order->save();
 			}
