@@ -354,6 +354,10 @@
             }
 
 			$order = Order::where('id',$id)->first();
+            //restrict if already cancelled
+            if($order->order_statuses_id == self::ORDER_CANCELLED){
+                return redirect(CRUDBooster::mainpath())->with(['message_type' => 'danger', 'message' =>"Order ".$order->reference." has already been cancelled!"])->send();
+            }
 			$items = OrderLine::where('orders_id',$id)->get();
 
 			Order::where('id',$id)->update([
