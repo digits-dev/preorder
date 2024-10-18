@@ -19,6 +19,14 @@ table.table.table-bordered th {
   border: 1px solid black;
 }
 
+table td.td-center {
+    text-align: center;
+}
+
+table td.td-right {
+    text-align: right;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -304,10 +312,10 @@ label.error{
 
 <script type="text/javascript">
 
-var token = $("#token").val();
-var stack = [];
-var orderLimit = false;
-var selectedModel = [];
+let token = $("#token").val();
+let stack = [];
+let orderLimit = false;
+let selectedModel = [];
 
 $(document).ready(function() {
     $('.error').hide();
@@ -327,7 +335,7 @@ $(document).ready(function() {
     });
 
     $('#order-items').on('click', '.delete_item', function () {
-        var v = $(this).attr("id");
+        let v = $(this).attr("id");
         stack = jQuery.grep(stack, function (value) {
             return value != v;
         });
@@ -339,12 +347,12 @@ $(document).ready(function() {
     });
 
     $('#order-items').on('keyup', '.order_qty', function(){
-        var id = $(this).attr("data-id");
-        var code = $(this).attr("data-code");
-        var qty = parseInt($(this).val());
-        var rate = parseFloat($(this).attr("data-rate"));
-        var price = calculatePrice(qty, rate);
-        var rsv_qty = $("#ajax_"+code).val();
+        let id = $(this).attr("data-id");
+        let code = $(this).attr("data-code");
+        let qty = parseInt($(this).val());
+        let rate = parseFloat($(this).attr("data-rate"));
+        let price = calculatePrice(qty, rate);
+        let rsv_qty = $("#ajax_"+code).val();
         //check if input qty > reservable qty
 
         if($(this).val().length == 0){
@@ -526,11 +534,11 @@ $(document).ready(function() {
                 "size": $('#size option:selected').val(),
                 "campaign": $('#campaigns_id option:selected').val()
             },
-            success: function (data) {
+            success: function (dataItem) {
 
-                if (data.status_no == 1) {
+                if (dataItem.status_no == 1) {
 
-                    var data = data.items;
+                    const data = dataItem.items;
                     $('#ui-id-2').css('display', 'none');
                     response($.map(data, function (item) {
                         return {
@@ -545,8 +553,8 @@ $(document).ready(function() {
                 } else {
                     $('.ui-menu-item').remove();
                     $('.addedLi').remove();
-                    $("#ui-id-2").append("<li class='addedLi'>"+data.message+"</li>");
-                    var searchVal = $("#search").val();
+                    $("#ui-id-2").append("<li class='addedLi'>"+dataItem.message+"</li>");
+                    let searchVal = $("#search").val();
                     if (searchVal.length > 0) {
                         $("#ui-id-2").css('display', 'block');
                     } else {
@@ -557,7 +565,7 @@ $(document).ready(function() {
         })
     },
     select: function (event, ui) {
-        var e = ui.item;
+        let e = ui.item;
         if (e.id) {
             if(e.reservable_qty == 0){
                 Swal.fire('Warning!','No available qty!','warning');
@@ -567,38 +575,39 @@ $(document).ready(function() {
             }
             if (!in_array(e.id, stack)) {
                 stack.push(e.id);
-                var max_f = e.included_freebie;
-                // $("#model").attr("disabled","disabled");//2023-02-22
+                let max_f = e.included_freebie;
 
-                var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
-                        '<td><input class="form-control text-center" type="text" tabindex="-1" name="digits_code[]" value="' + e.item_code + '" readonly></td>' +
-                        '<td><input class="form-control" type="text" tabindex="-1" id="item_description' + e.item_code + '" value="' + e.value + '" readonly></td>' +
-                        '<td><input class="form-control text-center order_qty item_quantity" data-id="' + e.id + '" data-rate="' + e.current_price + '"  data-code="' + e.item_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="qty_' + e.item_code + '" name="qty[]" value="1" readonly></td>' +
-                        '<td><input class="form-control text-center amount" type="text" id="amount_'+e.id+'" value="'+ e.current_price+'" name="amount[]" readonly></td>' +
-                        '<td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="reservable_qty[]" data-code="' + e.item_code + '" id="ajax_'+e.item_code+'" value="'+e.reservable_qty+'" readonly></td>'+
-                        '<input type="hidden" name="item_id[]" value="' + e.id + '">' +
-                        '<td class="text-center"><button id="'+e.id+'" class="btn btn-xs btn-danger delete_item"><i class="glyphicon glyphicon-trash"></i></button></td>' +
-                        '</tr>';
+                let new_row = `<tr class="nr" id="rowid${e.id}">
+                        <td><input class="form-control text-center" type="text" tabindex="-1" name="order_items[${e.item_code}][digits_code]" value="${e.item_code}" readonly></td>
+                        <td><input class="form-control" type="text" tabindex="-1" id="item_description${e.item_code}" value="${e.value}" readonly></td>
+                        <td><input class="form-control text-center order_qty item_quantity"
+                            data-id="${e.id}" data-rate="${e.current_price}"
+                            data-code="${e.item_code}" type="number" min="1" max="100"
+                            oninput="validity.valid||(value=0);" id="qty_${e.item_code}" name="order_items[${e.item_code}][qty]" value="1" readonly></td>
+                        <td><input class="form-control text-center amount" type="text" id="amount_${e.id}" value="${ e.current_price}" name="order_items[${e.item_code}][amount]" readonly></td>
+                        <td><input class="form-control text-center item-reservable" type="text" tabindex="-1" name="order_items[${e.item_code}][reservable_qty]" data-code="${e.item_code}" id="ajax_${e.item_code}" value="${e.reservable_qty}" readonly></td>
+                        <td class="text-center"><button id="${e.id}" class="btn btn-xs btn-danger delete_item"><i class="glyphicon glyphicon-trash"></i></button></td>
+                        </tr>`;
                 if(e.included_freebie != null){
                     $("#max_freebies").val(max_f.split(",").length);
                     $("#with_freebies").val(1);
-                    new_row +='<tr id="freebies_'+e.id+'">'+
-                            '<td colspan="6">'+
-                            '<table class="table table-bordered noselect items" id="order-freebies" style="display:none;">'+
+                    new_row +=`<tr id="freebies_${e.id}">
+                            <td colspan="6">
+                            <table class="table table-bordered noselect items" id="order-freebies" style="display:none;">
 
-                            '<tbody>'+
-                                '<tr class="dynamicFreebiesRows' + e.id + '"> </tr>'+
-                                '<tr class="tableFreebiesInfo">'+
-                                    '<td colspan="1"> </td>'+
-                                    '<td align="center"> <strong>{{ trans("label.table.total_free_skus") }} : <span id="totalFreeSKUS'+e.item_code+'">0</span></strong> </td>'+
-                                    '<td align="right"> <strong>{{ trans("label.table.total_free_quantity") }}</strong> </td>'+
-                                    '<td align="center"> <span id="totalFreeQuantity'+e.item_code+'">0</span> </td>'+
-                                    '<td align="center"> <span id="totalFreeAmount'+e.item_code+'">0</span> </td>'+
-                                    '<td colspan="2"> </td>'+
-                                '</tr>'+
-                            '</tbody>'+
-                            '</table>'+
-                        '</td></tr>';
+                            <tbody>
+                                <tr class="dynamicFreebiesRows${e.id}"> </tr>
+                                <tr class="tableFreebiesInfo">
+                                    <td colspan="1"> </td>
+                                    <td class="td-center"> <strong>{{ trans("label.table.total_free_skus") }} : <span id="totalFreeSKUS${e.item_code}">0</span></strong> </td>
+                                    <td class="td-right"> <strong>{{ trans("label.table.total_free_quantity") }}</strong> </td>
+                                    <td class="td-center"> <span id="totalFreeQuantity${e.item_code}">0</span> </td>
+                                    <td class="td-center"> <span id="totalFreeAmount${e.item_code}">0</span> </td>
+                                    <td colspan="2"> </td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </td></tr>`;
                 }
 
                 $(new_row).insertAfter($('table#order-items tr.dynamicRows:last'));
@@ -606,9 +615,9 @@ $(document).ready(function() {
                 $('.tableInfo').show();
                 //update available qty
                 $(function(){
-                    setInterval(function() {
-                        updateReservableQty();
-                    },500);
+                    setInterval(async function() {
+                        await updateReservableQty();
+                    },1000);
                 });
                 if(e.included_freebie != null){
                     //get freebies items
@@ -625,29 +634,39 @@ $(document).ready(function() {
                             $("#order-freebies").show();
                             $.each(data_freebies.freebies, function (i, item) {
                                 if(item.wh_reserved_qty != 0){
-                                    var freebies_row = '<tr class="nr-freebies fcategory'+ item.category +'" id="rowid' + item.id + '">' +
-                                        '<td width="5%" style="vertical-align: middle;text-align: center;"><input class="text-center freebies-checkbox check-box-' + e.item_code + '" data-id="' + e.item_code + '" data-code="' + item.digits_code + '" data-category="'+ item.category +'" type="checkbox" tabindex="-1" id="checkbox-' + item.digits_code + '" name="freebies[]"></td>' +
-                                        '<td width="10%"><input class="form-control text-center" type="text" tabindex="-1" name="f_digits_code[]" value="' + item.digits_code + '" readonly></td>' +
-                                        '<td width="35%"><input class="form-control" type="text" tabindex="-1" id="f_item_description' + item.digits_code + '" value="' + item.item_description + '" readonly></td>' +
-                                        '<td width="10%"><input class="form-control text-center order_freebies_qty freebies_quantity' + e.item_code + '" data-id="' + item.id + '" data-rate="' + item.current_srp + '"  data-code="' + item.digits_code + '" type="number" min="1" max="100" oninput="validity.valid||(value=0);" id="f_qty_' + item.digits_code + '" name="f_qty[]" value="1" readonly></td>' +
-                                        '<td width="20%"><input class="form-control text-center freebies_amount' + e.item_code + '" type="text" data-code="' + item.digits_code + '" id="f_amount_' + item.digits_code + '" name="f_amount[]" value="'+ item.current_srp+'" readonly></td>' +
-                                        '<td width="10%"><input class="form-control text-center freebies-reservable" type="text" tabindex="-1" name="f_reservable_qty[]" data-code="' + item.digits_code + '" id="ajax_'+item.digits_code+'" value="'+item.wh_reserved_qty+'" readonly></td>'+
-                                        '<input type="hidden" name="f_item_id[]" value="' + item.id + '">' +
-                                        '<td width="10%" class="text-center"><button id="'+item.id+'" data-id="' + e.item_code + '" class="btn btn-xs btn-danger delete_freebies"><i class="glyphicon glyphicon-trash"></i></button></td></tr>';
+                                    let freebies_row = `<tr class="nr-freebies fcategory${item.category}" id="rowid${item.id}">
+                                        <td width="5%" style="vertical-align: middle;text-align: center;">
+                                            <input class="text-center freebies-checkbox check-box-${e.item_code}" data-id="${e.item_code}"
+                                                data-code="${item.digits_code}" data-category="${item.category}" type="checkbox"
+                                                tabindex="-1" id="checkbox-${item.digits_code}" name="freebies[]"></td>
+                                        <td width="10%">
+                                            <input class="form-control text-center" type="text" tabindex="-1" name="order_items[${item.digits_code}][f_digits_code]" value="${item.digits_code}" readonly></td>
+                                        <td width="35%">
+                                            <input class="form-control" type="text" tabindex="-1" id="f_item_description${item.digits_code}" value="${item.item_description}" readonly></td>
+                                        <td width="10%">
+                                            <input class="form-control text-center order_freebies_qty freebies_quantity${e.item_code}" data-id="${item.id}"
+                                                data-rate="${item.current_srp}"  data-code="${item.digits_code}" type="number" min="1" max="100"
+                                                oninput="validity.valid||(value=0);" id="f_qty_${item.digits_code}" name="order_items[${item.digits_code}][f_qty]" value="1" readonly></td>
+                                        <td width="20%">
+                                            <input class="form-control text-center freebies_amount${e.item_code}" type="text" data-code="${item.digits_code}"
+                                                id="f_amount_${item.digits_code}" name="order_items[${item.digits_code}][f_amount]" value="${item.current_srp}" readonly></td>
+                                        <td width="10%">
+                                            <input class="form-control text-center freebies-reservable" type="text" tabindex="-1" name="order_items[${item.digits_code}][f_reservable_qty[]"
+                                                data-code="${item.digits_code}" id="ajax_${item.digits_code}" value="${item.wh_reserved_qty}" readonly></td>
+                                        <td width="10%" class="text-center"><button id="${item.id}" data-id="${e.item_code}" class="btn btn-xs btn-danger delete_freebies">
+                                            <i class="glyphicon glyphicon-trash"></i></button></td></tr>`;
 
-                                    $(freebies_row).insertAfter($('table#order-freebies tr.dynamicFreebiesRows' + e.id + ':last'));
-                                    $('#checkbox-'+ item.digits_code).trigger('click');
-                                    $(".fcategory"+item.category).css("background-color", item.background_color);
-                                }
+                                    $(freebies_row).insertAfter($('table#order-freebies tr.dynamicFreebiesRows'+ e.id +':last'));
+                                    $("#checkbox-"+ item.digits_code).trigger('click');
+                                    $(".fcategory"+ item.category).css("background-color", item.background_color);
+                               }
                             });
 
                             //update available qty
                             $(function(){
-                                setInterval(function() {
-                                    updateFreebiesReservableQty();
-                                },500);
-
-
+                                setInterval(async function() {
+                                    await updateFreebiesReservableQty();
+                                },1000);
                             });
                         }
                     });
@@ -658,12 +677,12 @@ $(document).ready(function() {
                     return ++oldval;
                 });
 
-                var q = $('#qty_' + e.item_code).val();
-                var r = $("#qty_" + e.item_code).attr("data-rate");
+                let q = $('#qty_' + e.item_code).val();
+                let r = $("#qty_" + e.item_code).attr("data-rate");
 
                 $('#amount_' + e.id).val(function (i, amount) {
                 if (q != 0) {
-                    var itemPrice = (q * r);
+                    let itemPrice = (q * r);
                     return itemPrice;
                 } else {
                     return 0;
@@ -754,7 +773,7 @@ $(document).on('click', '.freebies-checkbox', function(){
 });
 
 $(document).on('click', '.delete_freebies', function () {
-    var v = $(this).attr("id");
+    let v = $(this).attr("id");
 
     $(this).closest("tr").remove();
     let cItemFreebies = $(this).attr('data-id');
@@ -792,7 +811,7 @@ function resetDropDownV2() { //2023-02-22
 }
 
 function validateEmail(email) {
-    var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    let regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     if(!regex.test(email)) {
         return false;
     }else{
@@ -811,7 +830,7 @@ function in_array(search, array) {
 
 function calculatePrice(qty, rate) {
   if (qty != 0) {
-    var price = (qty * rate);
+    let price = (qty * rate);
     return price;
   } else {
     return '0';
@@ -837,7 +856,7 @@ function calculateTotalQuantity() {
 
 function checkFreebies() {
     let categoryError = false;
-    var f_category = [];
+    let f_category = [];
     $('.freebies-checkbox').each(function () {
         if($(this).prop("checked") == true) {
             if(f_category.indexOf($(this).attr('data-category')) != -1){
@@ -912,42 +931,47 @@ function getTotalComputations() {
     $("#totalQuantity").val(calculateTotalQuantity());
 }
 
-function updateReservableQty(){
-$('.item-reservable').each(function () {
+async function updateReservableQty(){
+    $('.item-reservable').each(async function () {
 
-    let item = $(this).attr("data-code");
-    let currentItem = $(this).attr("id");
-    $.ajax({
-    url: "{{ route('preorder.item-reservable') }}",
-        dataType: "json",
-        type: "POST",
-        data: {
-            _token: token,
-            item_code: item
-        },
-        success: function(data){
-            $("#"+currentItem).val(data);
+        let item = $(this).attr("data-code");
+        let currentItem = $(this).attr("id");
+        try {
+            let data = await $.ajax({
+                url: "{{ route('preorder.item-reservable') }}",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    _token: token,
+                    item_code: item
+                }
+            });
+            $("#" + currentItem).val(data);
+        } catch (error) {
+            console.error("Error updating main item reservable quantity:", error.message);
         }
     });
-});
 }
 
-function updateFreebiesReservableQty(){
-    $('.freebies-reservable').each(function () {
-        var item = $(this).attr("data-code");
-        var currentItem = $(this).attr("id");
-        $.ajax({
-        url: "{{ route('preorder.item-reservable') }}",
-            dataType: "json",
-            type: "POST",
-            data: {
-                _token: token,
-                item_code: item
-            },
-            success: function(data){
-                $("#"+currentItem).val(data);
-            }
-        });
+async function updateFreebiesReservableQty(){
+    $('.freebies-reservable').each(async function () {
+        let item = $(this).attr("data-code");
+        let currentItem = $(this).attr("id");
+
+        try {
+            let data = await $.ajax({
+                url: "{{ route('preorder.item-reservable') }}",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    _token: token,
+                    item_code: item
+                }
+            });
+            $("#" + currentItem).val(data);
+        } catch (error) {
+            console.error("Error updating freebies reservable quantity:", error.message);
+        }
     });
 }
 

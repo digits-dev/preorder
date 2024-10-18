@@ -15,7 +15,8 @@
 	use App\Models\PaymentMethod;
 	use App\Models\Store;
     use crocodicstudio\crudbooster\helpers\CRUDBooster;
-    use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
     use Illuminate\Support\Facades\Validator;
 	use Maatwebsite\Excel\Facades\Excel;
 
@@ -27,6 +28,10 @@
 		private const ORDER_CLAIMED = 2;
         private const ORDER_PARTIAL_CLAIMED = 3;
         private const CLAIMED_CANCELLED = 3;
+
+        public function __construct(){
+            $this->middleware('check.order.schedule')->only('getAdd');
+        }
 
 	    public function cbInit() {
 
@@ -40,7 +45,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -61,7 +66,6 @@
 			$this->col[] = ["label"=>"Total Amount","name"=>"total_amount"];
 			$this->col[] = ["label"=>"Payment Methods","name"=>"payment_methods_id","join"=>"payment_methods,payment_method"];
 			$this->col[] = ["label"=>"Pre-order Invoice #","name"=>"invoice_number"];
-			// $this->col[] = ["label"=>"Order Status","name"=>"order_statuses_id","join"=>"order_statuses,status_style"];
             $this->col[] = ["label"=>"Payment Date","name"=>"paid_at"];
 			$this->col[] = ["label"=>"Payment Status","name"=>"payment_statuses_id","join"=>"payment_statuses,status_style"];
 			$this->col[] = ["label"=>"Claim Status","name"=>"claim_statuses_id","join"=>"claim_statuses,status_style"];
@@ -70,14 +74,14 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Order Date','name'=>'order_date','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Reference','name'=>'reference','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Reference','name'=>'reference','type'=>'text','validation'=>'required|min:1|max:10','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Campaign','name'=>'campaigns_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'campaigns,campaign_name'];
 			$this->form[] = ['label'=>'Channel','name'=>'channels_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'channels,channel_name'];
 			$this->form[] = ['label'=>'Store','name'=>'stores_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'stores,store_name'];
-			$this->form[] = ['label'=>'Total Amount','name'=>'total_amount','type'=>'number','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Total Amount','name'=>'total_amount','type'=>'number','validation'=>'required','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Order Status','name'=>'order_statuses_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'order_statuses,status_name'];
 			$this->form[] = ['label'=>'Payment Method','name'=>'payment_methods_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'payment_methods,payment_method'];
-			$this->form[] = ['label'=>'Pre-order Invoice','name'=>'invoice_number','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Pre-order Invoice','name'=>'invoice_number','type'=>'text','validation'=>'required|min:1|max:50','width'=>'col-sm-10'];
 			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
 				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
 				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
@@ -255,19 +259,54 @@
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
+            // $withFreebies = $request->with_freebies;
+
 			$validator = Validator::make($request->all(), [
+                'with_freebies' => 'required',
                 'customer_name' => 'required',
 				'email_address' => 'required|email',
 				'contact_number' => 'required|numeric|digits:11',
-				'digits_code' => 'required',
-				'qty' => 'required',
+				'order_items' => 'required|array|min:1',
+				// 'order_items.*.digits_code' => 'required|string|digits:8|exists:items,digits_code',
+                // 'order_items.*.qty' => 'required|integer|min:1',
+                // 'order_items.*.amount' => 'required|numeric|min:0',
+                // 'order_items.*.reservable_qty' => 'required|integer|min:1',
+                // 'order_items.*.f_digits_code' => [
+                // 'sometimes',
+                // 'required_if:with_freebies,1',
+                // 'string',
+                // 'digits:8',
+                // 'nullable',
+                // 'exists:items,digits_code'
+                // ],
+                // 'order_items.*.f_qty' => [
+                //     'sometimes',
+                //     'required_if:with_freebies,1',
+                //     'nullable',
+                //     'integer',
+                //     'min:1'
+                // ],
+                // 'order_items.*.f_amount' => [
+                //     'sometimes',
+                //     'required_if:with_freebies,1',
+                //     'nullable',
+                //     'numeric',
+                //     'min:0'
+                // ],
+                // 'order_items.*.f_reservable_qty' => [
+                //     'sometimes',
+                //     'required_if:with_freebies,1',
+                //     'nullable',
+                //     'integer',
+                //     'min:1'
+                // ],
             ]);
 
 			if ($validator->fails()) {
 				return redirect(CRUDBooster::mainpath('add'))->with([
                     'message_type'=>'danger',
                     'message'=> implode(",", $validator->errors()->all())
-                ])->withInput();
+                ])->withInput()->send();
 			}
 
 			if ($request->over_qty == 1) {
@@ -304,42 +343,50 @@
 				'payment_statuses_id' => self::ORDER_RESERVED,
 			]);
 
-			foreach ($request->digits_code as $key => $digits_code) {
-				OrderLine::firstOrCreate([
-					'orders_id' => $order->id,
-					'digits_code' => $digits_code,
-					'qty' => $request->qty[$key],
-					'amount' => $request->amount[$key],
-					'available_qty' => $request->reservable_qty[$key]
-				]);
+			foreach ($request->order_items as $items) {
+                $dataItems = [
+                    'orders_id' => $order->id,
+					'digits_code' => $items['digits_code'],
+					'qty' => $items['qty'],
+					'amount' => $items['amount'],
+					'available_qty' => $items['reservable_qty']
+                ];
 
-				Item::where('digits_code',$digits_code)
-					->decrement('dtc_reserved_qty',$request->qty[$key]);
-			}
+                if($request->with_freebies == 1 && !empty($items['f_digits_code'])){
+                    $dataItems = [
+                        'orders_id' => $order->id,
+                        'digits_code' => $items['f_digits_code'],
+                        'qty' => $items['f_qty'],
+                        'amount' => 0,
+                        'available_qty' => $items['f_reservable_qty']
+                    ];
+                }
 
-			if($request->with_freebies == 1){
-				foreach ($request->f_digits_code as $key => $freebies) {
-					OrderLine::firstOrCreate([
-						'orders_id' => $order->id,
-						'digits_code' => $freebies,
-						'qty' => $request->f_qty[$key],
-						'amount' => 0,
-						'available_qty' => $request->f_reservable_qty[$key]
-					]);
+				OrderLine::firstOrCreate($dataItems);
 
-					Item::where('digits_code',$freebies)
-						->decrement('dtc_reserved_qty',$request->f_qty[$key]);
-				}
+                DB::transaction(function () use ($items) {
+                    $itemCode = $items['digits_code'] ?? $items['f_digits_code'];
+                    $itemQty = $items['qty'] ?? $items['f_qty'];
+                    $item = Item::where('digits_code', $itemCode)->lockForUpdate()->first();
+
+                    // Check if the quantity is sufficient
+                    if ($item->dtc_reserved_qty < $itemQty) {
+                        return back()->with([
+                            "message_type" => "danger",
+                            "message" => "Not enough inventory available!"
+                        ]);
+                    }
+
+                    $item->dtc_reserved_qty -= $itemQty;
+                    $item->save();
+                });
+
+                DB::commit();
 			}
 
 			CRUDBooster::insertLog(cbLang("log_add", ['name' => $order->reference, 'module' => CRUDBooster::getCurrentModule()->name]));
 
-			// CRUDBooster::redirect(CRUDBooster::mainpath(),'Order reserved!','success')->send();
             return self::getPrint($order->id);
-			// return redirect(CRUDBooster::mainpath())->with([
-			// 	'message' => 'Order reserved!',
-			// 	'message_type' => 'success'
-			// ])->send();
 
 		}
 
@@ -370,8 +417,16 @@
 			]);
 
 			foreach ($items as $item) {
-				Item::where('digits_code', $item->digits_code)
-					->increment('dtc_reserved_qty', $item->qty);
+                DB::transaction(function () use ($item) {
+                    $cancelledItem = Item::where('digits_code', $item->digits_code)->lockForUpdate()->first();
+
+                    $cancelledItem->dtc_reserved_qty += $item->qty;
+                    $cancelledItem->save();
+                });
+
+                DB::commit();
+				// Item::where('digits_code', $item->digits_code)
+				// 	->increment('dtc_reserved_qty', $item->qty);
 			}
 
 			CRUDBooster::insertLog(cbLang("log_update", ['name' => $order->reference.' cancelled ', 'module' => CRUDBooster::getCurrentModule()->name]));
@@ -443,4 +498,9 @@
 				->where('payment_statuses_id','!=',self::ORDER_CANCELLED)
 				->select('id')->get()->count());
 		}
+
+        public function orderRestricted(){
+            $data['page_title'] = "Order Restricted";
+			return view('order.restricted', $data);
+        }
 	}
