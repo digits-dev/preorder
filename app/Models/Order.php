@@ -5,6 +5,8 @@ namespace App\Models;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -31,6 +33,34 @@ class Order extends Model
         'payment_statuses_id',
         'payment_methods_id'
     ];
+
+    public function lines() : HasMany {
+        return $this->hasMany(OrderLine::class, 'orders_id', 'id');
+    }
+
+    public function channel() : BelongsTo {
+        return $this->belongsTo(Channel::class, 'channels_id', 'id');
+    }
+
+    public function store() : BelongsTo {
+        return $this->belongsTo(Store::class, 'stores_id', 'id');
+    }
+
+    public function customer() : BelongsTo {
+        return $this->belongsTo(Customer::class, 'customers_id', 'id');
+    }
+
+    public function paymentMethod() : BelongsTo {
+        return $this->belongsTo(PaymentMethod::class, 'payment_methods_id', 'id');
+    }
+
+    public function paymentStatus() : BelongsTo {
+        return $this->belongsTo(PaymentStatus::class, 'payment_statuses_id', 'id');
+    }
+
+    public function claimStatus() : BelongsTo {
+        return $this->belongsTo(ClaimStatus::class, 'claim_statuses_id', 'id');
+    }
 
     public function scopeWithCustomerOrder($query, $customer, $campaign){
         return $query->where('customers_id',$customer)

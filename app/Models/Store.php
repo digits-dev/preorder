@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use CRUDBooster;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Store extends Model
 {
@@ -19,6 +20,14 @@ class Store extends Model
         'status',
         'created_by'
     ];
+
+    public function channel() : BelongsTo {
+        return $this->belongsTo(Channel::class, 'channels_id', 'id');
+    }
+
+    public function concept() : BelongsTo {
+        return $this->belongsTo(Concept::class, 'concepts_id', 'id');
+    }
 
     public function scopeWithName($query, $store)
     {

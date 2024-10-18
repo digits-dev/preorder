@@ -5,6 +5,7 @@ namespace App\Models;
 use CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderLine extends Model
 {
@@ -19,6 +20,10 @@ class OrderLine extends Model
         'amount',
         'available_qty'
     ];
+
+    public function item() : BelongsTo {
+        return $this->belongsTo(Item::class, 'digits_code', 'digits_code');
+    }
 
     public function scopeWithDetails($query, $id)
     {
