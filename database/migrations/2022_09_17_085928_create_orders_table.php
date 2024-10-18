@@ -17,11 +17,11 @@ class CreateOrdersTable extends Migration
             $table->increments('id');
             $table->dateTime('order_date');
             $table->string('reference',11);
-            $table->integer('channels_id')->unsigned();
-            $table->integer('stores_id')->unsigned();
+            $table->integer('channels_id')->unsigned()->index();
+            $table->integer('stores_id')->unsigned()->index();
             $table->decimal('total_amount', 18, 2)->nullable();
             $table->integer('order_statuses_id')->unsigned()->nullable();
-            $table->integer('payment_methods_id')->unsigned()->nullable();
+            $table->integer('payment_methods_id')->unsigned()->nullable()->index();
             $table->integer('created_by')->unsigned()->nullable();
             $table->integer('updated_by')->unsigned()->nullable();
             $table->timestamps();

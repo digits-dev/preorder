@@ -15,8 +15,8 @@ class CreateOrderLinesTable extends Migration
     {
         Schema::create('order_lines', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('orders_id')->unsigned();
-            $table->string('digits_code',10)->nullable();
+            $table->integer('orders_id')->unsigned()->index();
+            $table->string('digits_code',10)->nullable()->index();
             $table->integer('qty',false,true)->length(10)->nullable();
             $table->decimal('amount', 16, 2)->nullable();
             $table->integer('available_qty',false,true)->length(10)->nullable();

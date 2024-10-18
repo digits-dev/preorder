@@ -14,7 +14,7 @@ class AddCampaignToOrdersTable extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->integer('campaigns_id')->unsigned()->default(0)->after('reference');
+            $table->unsignedInteger('campaigns_id')->default(0)->after('reference')->index();
         });
     }
 
