@@ -586,7 +586,7 @@
 
 		public function getItemSizes(Request $request)
 		{
-            $cacheKey = "item_size_{$request->model_id}";
+            $cacheKey = "item_size_{$request->model_id}{$request->color_id}";
 			$sizes = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
                 $sizeIds = Item::where('item_models_id', $request->model_id)
                     ->where('colors_id',$request->color_id)
