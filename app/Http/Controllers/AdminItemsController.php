@@ -1,9 +1,6 @@
 <?php namespace App\Http\Controllers;
 
-	use Session;
 	use Illuminate\Http\Request;
-	use DB;
-	use CRUDBooster;
 	use App\Models\Item;
 	use App\Imports\ItemInventoryImport;
 	use Maatwebsite\Excel\HeadingRowImport;
@@ -17,7 +14,9 @@
 	use App\Models\FreebiesCategory;
 	use App\Models\ItemModel;
 	use App\Models\Size;
-	use Maatwebsite\Excel\Facades\Excel;
+    use crocodicstudio\crudbooster\helpers\CRUDBooster;
+    use Illuminate\Support\Facades\Cache;
+    use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -172,7 +171,7 @@
 				$freebie_sets = explode(",",$column_value);
 				$sets = FreebiesCategory::whereIn('id',$freebie_sets)->get();
 				$column_value='';
-				foreach ($sets as $key => $value) {
+				foreach ($sets as $value) {
 					$column_value.='<span class="label label-info">'.$value->category_name.'</span><br>';
 				}
 
@@ -483,119 +482,152 @@
 
 		public function itemSearch(Request $request)
 		{
-			$data = array();
-            $data['status_no'] = 0;
-            $data['message']   ='No Item Found!';
-			$data['items'] = array();
+            $data = [
+                'status_no' => 0,
+                'message'   => 'No Item Found!',
+                'items'     => []
+            ];
 
-			$itemDetails = Item::where('item_models_id',$request->model)
-				->where('colors_id',$request->color)
-				->where('sizes_id',$request->size)
-				->where('campaigns_id',$request->campaign)
-				->skip(0)
-				->take(10)
-				->get();
+            $cacheKey = "item_search_{$request->model}_{$request->color}_{$request->size}_{$request->campaign}";
 
-			if($itemDetails){
+            $itemDetails = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
+                return Item::where('item_models_id', $request->model)
+                    ->where('colors_id', $request->color)
+                    ->where('sizes_id', $request->size)
+                    ->where('campaigns_id', $request->campaign)
+                    ->take(10)
+                    ->get();
+            });
 
-				$data['status_no'] = 1;
-				$data['message']   ='Item Found!';
-				$i = 0;
+            if ($itemDetails->isNotEmpty()) {
+                $data['status_no'] = 1;
+                $data['message']   = 'Item Found!';
 
-				foreach ($itemDetails as $key => $value) {
-					$return_arr[$i]['id'] = $value->id;
-					$return_arr[$i]['included_freebie'] = $value->included_freebies;
-                    $return_arr[$i]['digits_code'] = $value->digits_code;
-					$return_arr[$i]['item_description'] = $value->item_description;
-					$return_arr[$i]['current_srp'] = $value->current_srp;
-					$return_arr[$i]['wh_reserved_qty'] = $value->dtc_reserved_qty;
-					$i++;
-				}
-				$data['items'] = $return_arr;
-			}
+                // Map through the item details and format them
+                $data['items'] = $itemDetails->map(function ($item) {
+                    return [
+                        'id'                => $item->id,
+                        'included_freebie'   => $item->included_freebies,
+                        'digits_code'        => $item->digits_code,
+                        'item_description'   => $item->item_description,
+                        'current_srp'        => $item->current_srp,
+                        'wh_reserved_qty'    => $item->dtc_reserved_qty
+                    ];
+                });
+            }
 
-			return json_encode($data);
+            return response()->json($data);
 		}
 
 		public function freebiesSearch(Request $request)
 		{
 			$data = array();
-			$freebiesDetails = Item::whereIn('freebies_categories_id',explode(",",$request->search))
-				->where('is_freebies',1)
-				->orderBy('freebies_categories_id','ASC')
-				->get();
+            $return_arr = [];
+            $cacheKey = 'freebies_search_' . md5($request->search);
 
-			if($freebiesDetails){
+            $freebiesDetails = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
+                return Item::whereIn('freebies_categories_id', explode(",", $request->search))
+                    ->where('is_freebies', 1)
+                    ->orderBy('freebies_categories_id', 'ASC')
+                    ->get();
+            });
 
-				$i = 0;
+			if($freebiesDetails->isNotEmpty()){
 
-				foreach ($freebiesDetails as $key => $value) {
-					$return_arr[$i]['id'] = $value->id;
-					$return_arr[$i]['background_color'] = FreebiesCategory::where('id',$value->freebies_categories_id)->value('color_style');
-					$return_arr[$i]['category'] = $value->freebies_categories_id;
-					$return_arr[$i]['digits_code'] = $value->digits_code;
-					$return_arr[$i]['item_description'] = $value->item_description;
-					$return_arr[$i]['current_srp'] = $value->current_srp;
-					$return_arr[$i]['wh_reserved_qty'] = $value->dtc_reserved_qty;
-					$i++;
+                $uniqueCategoryIds = $freebiesDetails->pluck('freebies_categories_id')->unique()->toArray();
+
+				$categoryColors = Cache::remember('category_colors'. md5(json_encode($uniqueCategoryIds)), now()->addHours(10), function() use ($uniqueCategoryIds) {
+                    return FreebiesCategory::whereIn('id', $uniqueCategoryIds)
+                        ->pluck('color_style','id');
+                });
+
+				foreach ($freebiesDetails as $freebie) {
+                    $return_arr[] = [
+                        'id' => $freebie->id,
+                        'background_color' => $categoryColors[$freebie->freebies_categories_id] ?? '#536493',
+                        'category' => $freebie->freebies_categories_id,
+                        'digits_code' => $freebie->digits_code,
+                        'item_description' => $freebie->item_description,
+                        'current_srp' => $freebie->current_srp,
+                        'wh_reserved_qty' => $freebie->dtc_reserved_qty,
+                    ];
 				}
 				$data['freebies'] = $return_arr;
 			}
 
-			return json_encode($data);
+			return response()->json($data);
 		}
 
 		public function itemReservable(Request $request)
 		{
-			return json_encode(Item::where('digits_code',$request->item_code)->value('dtc_reserved_qty'));
+            $qty = Item::where('digits_code',$request->item_code)->value('dtc_reserved_qty');
+			return response()->json($qty);
 		}
 
 		public function getItemColors(Request $request)
 		{
-			$colors = Item::where('item_models_id',$request->model_id)
-				->where('is_freebies',0)
-				->where('dtc_reserved_qty','!=',0)
-				->select('colors_id')
-				->distinct()
-				->get();
+            $cacheKey = "item_colors_{$request->model_id}";
+            $colors = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
+                $colorIds = Item::where('item_models_id', $request->model_id)
+                    ->where('is_freebies', 0)
+                    ->where('dtc_reserved_qty', '!=', 0)
+                    ->distinct()
+                    ->pluck('colors_id');
 
-			return json_encode(Color::whereIn('id',$colors)
-				->where('status','ACTIVE')
-				->select('id','color_name')->orderBy('color_name','asc')->get());
+                return Color::whereIn('id', $colorIds)
+                    ->where('status', 'ACTIVE')
+                    ->select('id', 'color_name')
+                    ->orderBy('color_name', 'asc')
+                    ->get();
+            });
+
+			return response()->json($colors);
 		}
 
 		public function getItemSizes(Request $request)
 		{
-			$sizes = Item::where('item_models_id',$request->model_id)
-				->where('colors_id',$request->color_id)
-				->where('is_freebies',0)
-				->where('dtc_reserved_qty','!=',0)
-				->select('sizes_id')
-				->distinct()
-				->get();
+            $cacheKey = "item_size_{$request->model_id}";
+			$sizes = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
+                $sizeIds = Item::where('item_models_id', $request->model_id)
+                    ->where('colors_id',$request->color_id)
+                    ->where('is_freebies',0)
+                    ->where('dtc_reserved_qty','!=',0)
+                    ->distinct()
+                    ->pluck('sizes_id');
 
-			return json_encode(Size::whereIn('id',$sizes)
-				->where('status','ACTIVE')
-				->select('id','size')->orderBy('size','asc')->get());
+                return Size::whereIn('id', $sizeIds)
+                    ->where('status', 'ACTIVE')
+                    ->select('id', 'size')
+                    ->orderBy('size', 'asc')
+                    ->get();
+            });
+
+			return response()->json($sizes);
 		}
 
 		public function getItemModels(Request $request)
 		{
-			$models = Item::where('campaigns_id',$request->campaign_id)
-				->where('is_freebies',0)
-				->where('dtc_reserved_qty','!=',0)
-				->select('item_models_id')
-				->distinct()
-				->get();
+            $cacheKey = "item_models_{$request->campaign_id}";
+			$models = Cache::remember($cacheKey, now()->addHours(10), function() use ($request) {
+                $modelsId = Item::where('campaigns_id',$request->campaign_id)
+                    ->where('is_freebies',0)
+                    ->where('dtc_reserved_qty','!=',0)
+                    ->distinct()
+                    ->pluck('item_models_id');
 
-			return json_encode(ItemModel::whereIn('id',$models)
-				->where('status','ACTIVE')
-				->select('id','model_name')->orderBy('model_name','asc')->get());
+                return ItemModel::whereIn('id',$modelsId)
+                    ->where('status','ACTIVE')
+                    ->select('id','model_name')
+                    ->orderBy('model_name','asc')
+                    ->get();
+            });
+
+			return response()->json($models);
 		}
 
 		public function itemDelete()
 		{
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE || $this->button_edit==FALSE) {
+			if(!CRUDBooster::isUpdate() && !$this->global_privilege || !$this->button_edit) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}
 
