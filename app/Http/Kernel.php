@@ -64,5 +64,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'check.user.password' => \App\Http\Middleware\CheckUserForceChangePassword::class,
+        'check.order.schedule' => \App\Http\Middleware\CheckOrderSchedule::class,
     ];
 }

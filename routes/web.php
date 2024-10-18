@@ -70,6 +70,7 @@ Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CB
         Route::post('item-reservable',[AdminItemsController::class, 'itemReservable'])->name('preorder.item-reservable');
         Route::post('export',[AdminOrdersController::class,'preOrderExport'])->name('preorder.export');
         Route::post('get-customer-order-count',[AdminOrdersController::class,'getCustomerOrderCount'])->name('preorder.getCustomerOrders');
+        Route::get('order-restricted',[AdminOrdersController::class,'orderRestricted'])->name('show-order-restriction');
     });
 
     Route::post('customer/get-customer',[AdminCustomersController::class,'getCustomerDetails'])->name('preorder.getCustomer');
