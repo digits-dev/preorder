@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+use App\Models\OrderSchedule;
+use Carbon\Carbon;
 use crocodicstudio\crudbooster\helpers\CRUDBooster;
 
 	class AdminOrderSchedulesController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -55,13 +57,31 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'datetime'];
 			}
 
-	        $this->table_row_color = array();
+	        $this->table_row_color[] = ["color"=>"danger","condition"=>"[status]=='INACTIVE'"];
+
+            $this->button_selected = [];
+            if(CRUDBooster::isSuperadmin()){
+                $this->button_selected[] = ["label"=>"Set Status ACTIVE ","icon"=>"fa fa-check-circle","name"=>"set_status_ACTIVE"];
+                $this->button_selected[] = ["label"=>"Set Status INACTIVE","icon"=>"fa fa-times-circle","name"=>"set_status_INACTIVE"];
+            }
 
 	    }
 
 	    public function actionButtonSelected($id_selected,$button_name) {
-	        //Your code here
+            $data = [
+                'updated_at' => now(),
+                'updated_by' => CRUDBooster::myId()
+            ];
 
+            if($button_name == 'set_status_ACTIVE'){
+                $data['status'] = 'ACTIVE';
+            }
+            elseif($button_name == 'set_status_INACTIVE'){
+                $data['status'] = 'INACTIVE';
+            }
+
+            OrderSchedule::whereIn('id', $id_selected)
+                ->update($data);
 	    }
 
 	    public function hook_before_add(&$postdata) {
@@ -71,5 +91,18 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 	    public function hook_before_edit(&$postdata,$id) {
             $postdata['updated_by']=CRUDBooster::myId();
 	    }
+
+        public function deactivateSchedule() {
+            $activeSchedule = OrderSchedule::where('status','ACTIVE')
+                ->orderBy('start_date','asc')
+                ->first();
+
+            $timeNow = Carbon::now();
+            if($timeNow->gt(Carbon::parse($activeSchedule->end_date))){
+                $activeSchedule->status = 'INACTIVE';
+                $activeSchedule->save();
+            }
+
+        }
 
 	}
