@@ -15,7 +15,10 @@
 	use App\Models\ItemModel;
 	use App\Models\Size;
     use crocodicstudio\crudbooster\helpers\CRUDBooster;
+    use Exception;
     use Illuminate\Support\Facades\Cache;
+    use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\Log;
     use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -107,6 +110,11 @@
                 // }
             }
 
+            $this->button_selected = [];
+            if(CRUDBooster::isSuperadmin()){
+                $this->button_selected[] = ["label"=>"Zero out Inventory","icon"=>"fa fa-check-circle","name"=>"zero_out_inventory"];
+            }
+
 			$this->script_js = "
 				function showItemExport() {
 					$('#modal-item-export').modal('show');
@@ -163,6 +171,23 @@
 			";
 
 	    }
+
+        public function actionButtonSelected($id_selected,$button_name) {
+            if($button_name == 'zero_out_inventory'){
+                try {
+                    DB::beginTransaction();
+                    Item::whereIn('id', $id_selected)->update([
+                        'dtc_reserved_qty' => 0,
+                        'dtc_wh' => 0
+                    ]);
+                    DB::commit();
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    Log::error($e->getMessage());
+                }
+
+            }
+        }
 
 
 	    public function hook_row_index($column_index,&$column_value) {
