@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use CRUDBooster;
 
 class Item extends Model
 {
     use HasFactory;
 
     protected $table = 'items';
+    protected $connection = 'mysql';
 
     protected $fillable = [
         'digits_code',

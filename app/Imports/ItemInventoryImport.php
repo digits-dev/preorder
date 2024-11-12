@@ -18,7 +18,8 @@ class ItemInventoryImport implements ToModel, WithHeadingRow, WithChunkReading
     */
     public function model(array $row)
     {
-        Item::where('digits_code',$row["digits_code"])->update([
+        $digitsCode = (string) $row["digits_code"];
+        Item::where('digits_code', $digitsCode)->update([
             'dtc_wh' => $row["qty"],
             'dtc_reserved_qty' => $row["qty"]
         ]);
