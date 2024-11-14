@@ -20,8 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function(){
             $orderSchedule = new AdminOrderSchedulesController();
             $orderSchedule->deactivateSchedule();
-
-        })->dailyAt('23:30');
+        })->dailyAt('00:05');
     }
 
     /**

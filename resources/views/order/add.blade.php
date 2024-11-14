@@ -179,7 +179,7 @@ label.error{
                         <select id='campaigns_id' name="campaigns_id" class='form-control' required>
                             <option value=''>Please select a campaign</option>
                             @foreach ($campaigns as $campaign)
-                                <option data-limit="{{ $campaign->max_order_count }}" value="{{ $campaign->id }}">{{ $campaign->campaigns_name }}</option>
+                                <option data-limit="{{ $campaign['max_order_count'] }}" value="{{ $campaign['id'] }}">{{ $campaign['campaigns_name'] }}</option>
                             @endforeach
 
                         </select>

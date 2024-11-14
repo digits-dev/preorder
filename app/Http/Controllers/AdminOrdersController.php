@@ -12,9 +12,11 @@
 	use App\Models\Order;
 	use App\Models\OrderFreebiesSetup;
 	use App\Models\OrderLine;
-	use App\Models\PaymentMethod;
+use App\Models\OrderSchedule;
+use App\Models\PaymentMethod;
 	use App\Models\Store;
-    use crocodicstudio\crudbooster\helpers\CRUDBooster;
+use Carbon\Carbon;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
     use Illuminate\Support\Facades\Validator;
@@ -193,7 +195,20 @@ use Illuminate\Support\Facades\Session;
 
             $data = [];
             $data['page_title'] = 'Pre-Order Creation';
-			$data['campaigns'] = Campaign::where('status','ACTIVE')->get();
+
+            $currentTime = Carbon::now();
+            $activeSchedule = OrderSchedule::where('status','ACTIVE')
+                ->orderBy('start_date','asc')->get();
+
+            $activeCampaigns = [];
+            foreach($activeSchedule as $schedule){
+                if ($currentTime->gte(Carbon::parse($schedule->start_date))) {
+                    $currentCampaign = Campaign::active()->where('id', $schedule->campaigns_id)->get();
+                    $activeCampaigns = array_merge($activeCampaigns, $currentCampaign->toArray());
+                }
+            }
+
+            $data['campaigns'] = $activeCampaigns;
 			$data['channels'] = Channel::where('status','ACTIVE')->get();
 			$data['stores'] = Store::where('status','ACTIVE')->get();
 			if(!CRUDBooster::isSuperAdmin()){

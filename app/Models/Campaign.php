@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use CRUDBooster;
 
 class Campaign extends Model
 {
@@ -20,12 +20,19 @@ class Campaign extends Model
 
     public function scopeWithName($query, $campaign)
     {
-        return $query->where('campaigns_name',$campaign)->where('status','ACTIVE')->first();
+        return $query->where('campaigns_name',$campaign)
+            ->where('status','ACTIVE')->first();
     }
-    
+
     public function scopeWithOrderLimit($query, $id)
     {
-        return $query->where('id',$id)->where('status','ACTIVE')->value('max_order_count');
+        return $query->where('id',$id)->where('status','ACTIVE')
+            ->value('max_order_count');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status','ACTIVE');
     }
 
     public static function boot()

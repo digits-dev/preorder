@@ -10,12 +10,18 @@ use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\ItemModel;
 use App\Models\Size;
+use crocodicstudio\crudbooster\helpers\CRUDBooster;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterImport;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\ImportFailed;
 
-class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
+class ItemImport implements ToModel, WithHeadingRow, WithChunkReading, WithEvents
 {
     use Importable;
     /**
@@ -48,5 +54,21 @@ class ItemImport implements ToModel, WithHeadingRow, WithChunkReading
     public function chunkSize(): int
     {
         return 1000;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            BeforeImport::class => function(BeforeImport $event) {
+                Log::info('Import item started at: ' . now());
+            },
+            AfterImport::class => function(AfterImport $event) {
+                Log::info('Import item completed at: ' . now());
+                CRUDBooster::insertLog(cbLang("log_add", ['name' => "Import item completed!", 'module' => "Items"]));
+            },
+            ImportFailed::class => function(ImportFailed $event) {
+                Log::error('Import item failed with error: ' . $event->getException()->getMessage());
+            },
+        ];
     }
 }
