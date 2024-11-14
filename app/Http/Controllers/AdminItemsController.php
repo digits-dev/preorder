@@ -23,6 +23,14 @@
 
 	class AdminItemsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
+        public function __construct()
+        {
+            $this->middleware('check.item.schedule')->only([
+                'itemView',
+                'inventoryView'
+            ]);
+        }
+
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -666,5 +674,10 @@
 			$filename = $request->input('filename');
 			return Excel::download(new ItemExport, $filename.'.xlsx');
 		}
+
+        public function importRestricted(){
+            $data['page_title'] = "Import Restricted";
+			return view('item.restricted', $data);
+        }
 
 	}

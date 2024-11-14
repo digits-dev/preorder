@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 
-class CheckOrderSchedule
+class CheckImportSchedule
 {
     /**
      * Handle an incoming request.
@@ -21,10 +21,10 @@ class CheckOrderSchedule
         $currentTime = Carbon::now();
 
         $activeSchedule = OrderSchedule::active()
-            ->where('activity','create-orders')->first();
+            ->where('activity','import-items')->first();
 
         if ($currentTime->lt(Carbon::parse($activeSchedule->start_date)) || $currentTime->gt(Carbon::parse($activeSchedule->end_date))) {
-            return redirect()->route('show-order-restriction')->send();
+            return redirect()->route('show-item-import-restriction')->send();
         }
 
         return $next($request);

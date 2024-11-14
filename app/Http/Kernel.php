@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'check.user.password' => \App\Http\Middleware\CheckUserForceChangePassword::class,
         'check.order.schedule' => \App\Http\Middleware\CheckOrderSchedule::class,
+        'check.item.schedule' => \App\Http\Middleware\CheckImportSchedule::class,
     ];
 }

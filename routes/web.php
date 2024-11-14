@@ -47,6 +47,7 @@ Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CB
         Route::post('get-sizes',[AdminItemsController::class, 'getItemSizes'])->name('item.getItemSizes');
         Route::get('delete-all-item',[AdminItemsController::class, 'itemDelete'])->name('item.delete-all');
         Route::post('export',[AdminItemsController::class,'itemExport'])->name('item.export');
+        Route::get('import-restricted',[AdminItemsController::class,'importRestricted'])->name('show-item-import-restriction');
     });
 
     Route::group(['prefix' => 'users'], function () {
