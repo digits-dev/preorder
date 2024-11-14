@@ -197,8 +197,9 @@ use Illuminate\Support\Facades\Session;
             $data['page_title'] = 'Pre-Order Creation';
 
             $currentTime = Carbon::now();
-            $activeSchedule = OrderSchedule::where('status','ACTIVE')
-                ->orderBy('start_date','asc')->get();
+            $activeSchedule = OrderSchedule::active()
+                ->where('activity','create-order')
+                ->get();
 
             $activeCampaigns = [];
             foreach($activeSchedule as $schedule){

@@ -11,4 +11,9 @@ class OrderSchedule extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    public function scopeActive($query){
+        return $query->where('status', 'ACTIVE')
+            ->orderBy('start_date','asc');
+    }
 }
