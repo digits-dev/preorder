@@ -198,7 +198,7 @@ use Illuminate\Support\Facades\Session;
 
             $currentTime = Carbon::now();
             $activeSchedule = OrderSchedule::active()
-                ->where('activity','create-order')
+                ->where('activity','create-orders')
                 ->get();
 
             $activeCampaigns = [];
