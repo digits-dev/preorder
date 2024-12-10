@@ -44,7 +44,7 @@ class ItemInventoryImport implements ToModel, WithHeadingRow, WithChunkReading, 
             },
             AfterImport::class => function(AfterImport $event) {
                 Log::info('Import item inventory completed at: ' . now());
-                CRUDBooster::insertLog(cbLang("log_add", ['name' => "Import item completed!", 'module' => "Items"]));
+                CRUDBooster::insertLog("Import item completed!");
             },
             ImportFailed::class => function(ImportFailed $event) {
                 Log::error('Import item inventory failed with error: ' . $event->getException()->getMessage());
