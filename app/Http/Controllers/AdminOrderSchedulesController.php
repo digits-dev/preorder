@@ -44,7 +44,8 @@ use crocodicstudio\crudbooster\helpers\CRUDBooster;
 			$this->form = [];
 			$this->form[] = ['label'=>'Campaign','name'=>'campaigns_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-6',
                 'datatable'=>'campaigns,campaigns_name','datatable_where'=>"status='ACTIVE'"];
-			$this->form[] = ['label'=>'Activity','name'=>'activity','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-6'];
+			$this->form[] = ['label'=>'Activity','name'=>'activity','type'=>'select','validation'=>'required','width'=>'col-sm-6',
+                'dataenum'=>'import-items;create-orders'];
 			$this->form[] = ['label'=>'Start Date','name'=>'start_date','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-6'];
 			$this->form[] = ['label'=>'End Date','name'=>'end_date','type'=>'datetime','validation'=>'required|date_format:Y-m-d H:i:s','width'=>'col-sm-6'];
 			if(in_array(CRUDBooster::getCurrentMethod(),['getEdit','postEditSave','getDetail'])) {
